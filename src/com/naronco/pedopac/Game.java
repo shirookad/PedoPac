@@ -9,8 +9,10 @@ import org.lwjgl.*;
 import org.lwjgl.opengl.*;
 
 import com.naronco.pedopac.mesh.*;
+import com.naronco.pedopac.physics.*;
 
 public class Game {
+	private PhysicsWorld physicsWorld;
 	private Mesh carMesh;
 	private Transform carTransform;
 	private FloatBuffer fbuf;
@@ -18,6 +20,7 @@ public class Game {
 	private Shader diffuseShader;
 
 	public Game() {
+		physicsWorld = new PhysicsWorld();
 		carMesh = ObjLoader.load("Hummer");
 		levelMesh = ObjLoader.load("levels/level1_deco");
 		carTransform = new Transform();
