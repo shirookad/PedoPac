@@ -15,6 +15,13 @@ public class Vertex {
 		this.color = new Vector4f(1, 1, 1, 1);
 	}
 
+	public Vertex(Vector3f position, Vector4f color) {
+		this.position = position;
+		this.uv = new Vector2f(0, 0);
+		this.normal = new Vector3f(0, 0, 1);
+		this.color = color;
+	}
+
 	public Vertex(Vector3f position, Vector2f uv) {
 		this.position = position;
 		this.uv = uv;
