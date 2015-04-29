@@ -8,8 +8,8 @@ import java.nio.*;
 import org.lwjgl.*;
 import org.lwjgl.opengl.*;
 
-import com.naronco.pedopac.mesh.*;
 import com.naronco.pedopac.physics.*;
+import com.naronco.pedopac.rendering.*;
 
 public class Game {
 	private PhysicsWorld physicsWorld;
