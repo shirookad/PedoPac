@@ -1,8 +1,7 @@
 package com.naronco.pedopac;
 
-import org.lwjgl.LWJGLException;
-import org.lwjgl.opengl.Display;
-import org.lwjgl.opengl.DisplayMode;
+import org.lwjgl.*;
+import org.lwjgl.opengl.*;
 
 public class Main {
 
