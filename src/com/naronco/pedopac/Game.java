@@ -6,16 +6,19 @@ import static org.lwjgl.util.glu.GLU.*;
 import org.lwjgl.opengl.*;
 
 import com.naronco.pedopac.mesh.*;
+import com.naronco.pedopac.physics.*;
 
 public class Game {
+	private PhysicsWorld physicsWorld;
 	private Mesh carMesh;
 	private Shader diffuseShader;
 	private float rota = 0;
 
 	public Game() {
+		physicsWorld = new PhysicsWorld();
 		carMesh = ObjLoader.load("Hummer");
 		diffuseShader = new Shader("diffuse");
-		
+
 		glEnable(GL_DEPTH_TEST);
 	}
 

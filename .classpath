@@ -10,5 +10,6 @@
 	</classpathentry>
 	<classpathentry kind="lib" path="res"/>
 	<classpathentry kind="lib" path="jar/jbullet.jar"/>
+	<classpathentry kind="lib" path="jar/vecmath.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
