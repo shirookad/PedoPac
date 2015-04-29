@@ -2,9 +2,6 @@ package com.naronco.pedopac;
 
 import static org.lwjgl.opengl.GL20.*;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-
 public class Shader {
 	private int program;
 
@@ -30,29 +27,14 @@ public class Shader {
 		glDeleteProgram(program);
 	}
 
-	private static String loadFile(String filename) {
-		try {
-			BufferedReader reader = new BufferedReader(new InputStreamReader(
-					Shader.class.getResourceAsStream(filename)));
-			String content = "", line;
-			while ((line = reader.readLine()) != null) {
-				content += line + "\n";
-			}
-			return content;
-		} catch (Exception e) {
-			e.printStackTrace();
-			return null;
-		}
-	}
-
 	private static int loadShader(String filename, int type) {
-		String content = loadFile(filename);
+		String content = Util.loadResourceText(filename);
 		switch (type) {
 		case GL_VERTEX_SHADER:
-			content = "#define __COMPILING_VERTEX\n" + content;
+			content = "#define _COMPILING_VERTEX\n" + content;
 			break;
 		case GL_FRAGMENT_SHADER:
-			content = "#define __COMPILING_FRAGMENT\n" + content;
+			content = "#define _COMPILING_FRAGMENT\n" + content;
 			break;
 		}
 
@@ -60,6 +42,12 @@ public class Shader {
 
 		glShaderSource(shader, content);
 		glCompileShader(shader);
+		
+		if(glGetShaderi(shader, GL_COMPILE_STATUS) == 0)
+		{
+			int len = glGetShaderi(shader, GL_INFO_LOG_LENGTH);
+			System.out.println(glGetShaderInfoLog(shader, len));
+		}
 
 		return shader;
 	}

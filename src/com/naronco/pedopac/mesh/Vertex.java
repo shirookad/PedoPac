@@ -1,4 +1,4 @@
-package com.naronco.pedopac;
+package com.naronco.pedopac.mesh;
 
 import org.lwjgl.util.vector.*;
 
