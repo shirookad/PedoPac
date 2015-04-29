@@ -6,9 +6,7 @@ import static org.lwjgl.util.glu.GLU.*;
 import java.nio.*;
 
 import org.lwjgl.*;
-import org.lwjgl.input.*;
 import org.lwjgl.opengl.*;
-import org.lwjgl.util.vector.*;
 
 import com.naronco.pedopac.mesh.*;
 
@@ -30,22 +28,7 @@ public class Game {
 	}
 
 	public void update(float delta) {
-		if(Keyboard.isKeyDown(Keyboard.KEY_A))
-		{
-			Quaternion q = new Quaternion();
-			q.setFromAxisAngle(new Vector4f(0, 1, 0, delta));
-			Quaternion out = new Quaternion();
-			Quaternion.mul(carTransform.getRotation(), q, out);
-			carTransform.setRotation(out);
-		}
-		if(Keyboard.isKeyDown(Keyboard.KEY_D))
-		{
-			Quaternion q = new Quaternion();
-			q.setFromAxisAngle(new Vector4f(0, 1, 0, -delta));
-			Quaternion out = new Quaternion();
-			Quaternion.mul(carTransform.getRotation(), q, out);
-			carTransform.setRotation(out);
-		}
+		
 	}
 
 	public void render() {
