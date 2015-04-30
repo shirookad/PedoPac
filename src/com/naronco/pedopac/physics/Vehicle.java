@@ -13,7 +13,7 @@ public class Vehicle {
 	private VehicleRaycaster vehicleRayCaster;
 	private RaycastVehicle vehicle;
 	private VehicleTuning tuning = new VehicleTuning();
-	
+
 	private static final int rightIndex = 0;
 	private static final int upIndex = 1;
 	private static final int forwardIndex = 2;
@@ -50,7 +50,8 @@ public class Vehicle {
 	public void create(PhysicsWorld world) {
 		Transform tr = new Transform();
 		tr.setIdentity();
-		CollisionShape chassisShape = new BoxShape(new Vector3f(3.0f, 1.0f, 1.0f));
+		CollisionShape chassisShape = new BoxShape(new Vector3f(3.0f, 1.0f,
+				1.0f));
 
 		CompoundShape compound = new CompoundShape();
 		Transform localTrans = new Transform();
@@ -68,11 +69,16 @@ public class Vehicle {
 		Transform tr2 = new Transform();
 		tr2.setIdentity();
 		tr2.origin.set(0, 1, 0);
-		tr2.setRotation(new Quat4f(0.7071067811865476f, 0.7071067811865476f, 0, 0));
+		tr2.setRotation(new Quat4f(0.7071067811865476f, 0.7071067811865476f, 0,
+				0));
 		carChassis.setCenterOfMassTransform(tr2);
 		carChassis.setLinearVelocity(new Vector3f(0, 0, 0));
 		carChassis.setAngularVelocity(new Vector3f(0, 0, 0));
-		world.getDynamicsWorld().getBroadphase().getOverlappingPairCache().cleanProxyFromPairs(carChassis.getBroadphaseHandle(), world.getDynamicsWorld().getDispatcher());
+		world.getDynamicsWorld()
+				.getBroadphase()
+				.getOverlappingPairCache()
+				.cleanProxyFromPairs(carChassis.getBroadphaseHandle(),
+						world.getDynamicsWorld().getDispatcher());
 		if (vehicle != null) {
 			vehicle.resetSuspension();
 			for (int i = 0; i < vehicle.getNumWheels(); i++) {
@@ -81,7 +87,8 @@ public class Vehicle {
 		}
 
 		{
-			vehicleRayCaster = new DefaultVehicleRaycaster(world.getDynamicsWorld());
+			vehicleRayCaster = new DefaultVehicleRaycaster(
+					world.getDynamicsWorld());
 			vehicle = new RaycastVehicle(tuning, carChassis, vehicleRayCaster);
 
 			carChassis.setActivationState(CollisionObject.DISABLE_DEACTIVATION);
@@ -94,14 +101,22 @@ public class Vehicle {
 
 			vehicle.setCoordinateSystem(rightIndex, upIndex, forwardIndex);
 
-			vehicle.addWheel(new Vector3f(-2.5f, h, -1.0f + wheelWidth), wheelDirectionCS0, wheelAxleCS, suspensionRestLength, wheelRadius, tuning, isFrontWheel);
+			vehicle.addWheel(new Vector3f(-2.5f, h, -1.0f + wheelWidth),
+					wheelDirectionCS0, wheelAxleCS, suspensionRestLength,
+					wheelRadius, tuning, isFrontWheel);
 
-			vehicle.addWheel(new Vector3f(-2.5f, h, 1.0f - wheelWidth), wheelDirectionCS0, wheelAxleCS, suspensionRestLength, wheelRadius, tuning, isFrontWheel);
+			vehicle.addWheel(new Vector3f(-2.5f, h, 1.0f - wheelWidth),
+					wheelDirectionCS0, wheelAxleCS, suspensionRestLength,
+					wheelRadius, tuning, isFrontWheel);
 
 			isFrontWheel = false;
-			vehicle.addWheel(new Vector3f(2.5f, h, -1.0f + wheelWidth), wheelDirectionCS0, wheelAxleCS, suspensionRestLength, wheelRadius, tuning, isFrontWheel);
+			vehicle.addWheel(new Vector3f(2.5f, h, -1.0f + wheelWidth),
+					wheelDirectionCS0, wheelAxleCS, suspensionRestLength,
+					wheelRadius, tuning, isFrontWheel);
 
-			vehicle.addWheel(new Vector3f(2.5f, h, 1.0f - wheelWidth), wheelDirectionCS0, wheelAxleCS, suspensionRestLength, wheelRadius, tuning, isFrontWheel);
+			vehicle.addWheel(new Vector3f(2.5f, h, 1.0f - wheelWidth),
+					wheelDirectionCS0, wheelAxleCS, suspensionRestLength,
+					wheelRadius, tuning, isFrontWheel);
 
 			for (int i = 0; i < vehicle.getNumWheels(); i++) {
 				WheelInfo wheel = vehicle.getWheelInfo(i);
@@ -142,14 +157,12 @@ public class Vehicle {
 		wheelIndex = 1;
 		vehicle.setSteeringValue(gVehicleSteering, wheelIndex);
 	}
-	
-	public Transform getTransform(Transform t)
-	{
+
+	public Transform getTransform(Transform t) {
 		return vehicle.getChassisWorldTransform(t);
 	}
-	
-	public Transform getWheelTransform(int index, Transform t)
-	{
+
+	public Transform getWheelTransform(int index, Transform t) {
 		return vehicle.getWheelTransformWS(index, t);
 	}
 }

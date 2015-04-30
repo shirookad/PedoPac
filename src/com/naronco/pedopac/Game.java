@@ -71,7 +71,7 @@ public class Game {
 
 		physicsWorld.addRigidBody(PhysicsWorld.createRigidBody(
 				new StaticPlaneShape(new Vector3f(0, 1, 0), 0), 0));
-		
+
 		vehicle = new Vehicle();
 		vehicle.create(physicsWorld);
 
@@ -81,16 +81,11 @@ public class Game {
 	}
 
 	public void update(float delta) {
-		if(Keyboard.isKeyDown(Keyboard.KEY_W))
-		{
+		if (Keyboard.isKeyDown(Keyboard.KEY_W)) {
 			vehicle.accelerate(1);
-		}
-		else if(Keyboard.isKeyDown(Keyboard.KEY_S))
-		{
+		} else if (Keyboard.isKeyDown(Keyboard.KEY_S)) {
 			vehicle.accelerate(-1);
-		}
-		else
-		{
+		} else {
 			vehicle.accelerate(0);
 		}
 		vehicle.update();
@@ -112,7 +107,8 @@ public class Game {
 
 		vehicle.getTransform(out);
 
-		gluLookAt(out.origin.x + 5, out.origin.y + 2, out.origin.z, out.origin.x, out.origin.y, out.origin.z, 0, 1, 0);
+		gluLookAt(out.origin.x + 5, out.origin.y + 2, out.origin.z,
+				out.origin.x, out.origin.y, out.origin.z, 0, 1, 0);
 
 		glPushMatrix();
 		{
