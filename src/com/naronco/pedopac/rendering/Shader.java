@@ -49,8 +49,10 @@ public class Shader {
 
 		if (DEFERRED_SHADING) {
 			content = "#define _DEFERRED_SHADING\n" + content;
-			content = "#define _WRITE_TO_TEXTURES(c, n) gl_FragData[0] = vec4(c.rgb, 1.0); gl_FragData[1] = vec4(normalize(n) * 0.5 + 0.5, 1.0)\n"
-					+ content;
+			content = "#define _WRITE_TO_TEXTURES(p, c, n) gl_FragData[0] = vec4(c.rgb, 1.0); gl_FragData[1] = vec4(normalize(n) * 0.5 + 0.5, 1.0);"
+					+ //
+					"gl_FragDepth = (2 * gl_DepthRange.near) / (gl_DepthRange.far + gl_DepthRange.near - p.z * (gl_DepthRange.far - gl_DepthRange.near));\n" + //
+					content;
 		}
 
 		return content;
