@@ -41,8 +41,6 @@ public class Game {
 	private Texture2D randomTexture;
 	private Texture2D kernelTexture;
 
-	private Camera camera;
-
 	private Vehicle vehicle;
 	private com.bulletphysics.linearmath.Transform out = new com.bulletphysics.linearmath.Transform();
 
@@ -102,13 +100,15 @@ public class Game {
 		kernelTexture = new Texture2D(SSAO_KERNEL_SIZE, SSAO_KERNEL_SIZE,
 				GL_RGB, GL_RGB, Util.createFloatBufferFromArray(kernel));
 
-		camera = new Camera(new Matrix4f());
-		camera.setController(new FreeCameraController());
-
 		fbuf = BufferUtils.createFloatBuffer(16);
 
+		out.setIdentity();
+		out.origin.set(0, -10, 0);
+		
 		physicsWorld.addRigidBody(PhysicsWorld.createRigidBody(
-				new StaticPlaneShape(new Vector3f(0, 1, 0), 0), 0));
+				new BoxShape(new Vector3f(1000, 10, 1000)), 0, out));
+		
+		out.setIdentity();
 
 		vehicle = new Vehicle();
 		vehicle.create(physicsWorld);
@@ -119,12 +119,20 @@ public class Game {
 	}
 
 	public void update(float delta) {
-		camera.update(delta);
-
+		if (Keyboard.isKeyDown(Keyboard.KEY_A)) {
+			vehicle.steer(-1);
+		} else if (Keyboard.isKeyDown(Keyboard.KEY_D)) {
+			vehicle.steer(1);
+		} else {
+			vehicle.steer(0);
+		}
+		
 		if (Keyboard.isKeyDown(Keyboard.KEY_W)) {
 			vehicle.accelerate(1);
 		} else if (Keyboard.isKeyDown(Keyboard.KEY_S)) {
 			vehicle.accelerate(-1);
+		} else if (Keyboard.isKeyDown(Keyboard.KEY_SPACE)) {
+			vehicle.slow(1);
 		} else {
 			vehicle.accelerate(0);
 		}
@@ -150,7 +158,7 @@ public class Game {
 
 		vehicle.getTransform(out);
 
-		gluLookAt(out.origin.x + 5, out.origin.y + 2, out.origin.z,
+		gluLookAt(out.origin.x, out.origin.y + 3, out.origin.z - 5,
 				out.origin.x, out.origin.y, out.origin.z, 0, 1, 0);
 
 		glPushMatrix();
