@@ -1,8 +1,12 @@
-package com.naronco.pedopac;
+package com.naronco.pedopac.rendering;
 
 import static org.lwjgl.opengl.GL20.*;
 
+import com.naronco.pedopac.*;
+
 public class Shader {
+	public static final boolean DEFERRED_SHADING = true;
+
 	private int program;
 
 	public Shader(String name) {
@@ -29,6 +33,7 @@ public class Shader {
 
 	private static int loadShader(String filename, int type) {
 		String content = Util.loadResourceText(filename);
+
 		switch (type) {
 		case GL_VERTEX_SHADER:
 			content = "#define _COMPILING_VERTEX\n" + content;
@@ -38,15 +43,22 @@ public class Shader {
 			break;
 		}
 
+		if (DEFERRED_SHADING) {
+			content = "#define _DEFERRED_SHADING\n" + content;
+			content = "#define _WRITE_TO_TEXTURES(c, n) gl_FragData[0] = vec4(c.rgb, 1.0); gl_FragData[1] = vec4(normalize(n) * 0.5 + 0.5, 1.0)\n"
+					+ content;
+		}
+
+		content = "#version 130\n" + content;
+
 		int shader = glCreateShader(type);
 
 		glShaderSource(shader, content);
 		glCompileShader(shader);
-		
-		if(glGetShaderi(shader, GL_COMPILE_STATUS) == 0)
-		{
-			int len = glGetShaderi(shader, GL_INFO_LOG_LENGTH);
-			System.out.println(glGetShaderInfoLog(shader, len));
+
+		if (glGetShaderi(shader, GL_COMPILE_STATUS) == 0) {
+			System.out.println(glGetShaderInfoLog(shader,
+					glGetShaderi(shader, GL_INFO_LOG_LENGTH)));
 		}
 
 		return shader;

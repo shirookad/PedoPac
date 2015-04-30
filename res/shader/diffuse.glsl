@@ -17,7 +17,11 @@ varying vec3 normal;
 varying vec4 color;
 
 void main() {
+#ifdef _DEFERRED_SHADING
+	_WRITE_TO_TEXTURES(color, normal);
+#else
 	gl_FragColor = vec4(dot(normalize(normal), normalize(vec3(1, 1, 1))) * color.rgb, color.a);
+#endif
 }
 
 #endif

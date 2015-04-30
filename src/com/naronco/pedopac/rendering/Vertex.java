@@ -15,6 +15,13 @@ public class Vertex {
 		this.color = new Vector4f(1, 1, 1, 1);
 	}
 
+	public Vertex(float x, float y, float z) {
+		this.position = new Vector3f(x, y, z);
+		this.uv = new Vector2f(0, 0);
+		this.normal = new Vector3f(0, 0, 1);
+		this.color = new Vector4f(1, 1, 1, 1);
+	}
+
 	public Vertex(Vector3f position, Vector4f color) {
 		this.position = position;
 		this.uv = new Vector2f(0, 0);
@@ -25,6 +32,13 @@ public class Vertex {
 	public Vertex(Vector3f position, Vector2f uv) {
 		this.position = position;
 		this.uv = uv;
+		this.normal = new Vector3f(0, 0, 1);
+		this.color = new Vector4f(1, 1, 1, 1);
+	}
+
+	public Vertex(float x, float y, float z, float u, float v) {
+		this.position = new Vector3f(x, y, z);
+		this.uv = new Vector2f(u, v);
 		this.normal = new Vector3f(0, 0, 1);
 		this.color = new Vector4f(1, 1, 1, 1);
 	}
