@@ -13,8 +13,8 @@ import org.lwjgl.opengl.*;
 
 import com.bulletphysics.collision.shapes.*;
 import com.bulletphysics.dynamics.*;
-import com.naronco.pedopac.mesh.*;
 import com.naronco.pedopac.physics.*;
+import com.naronco.pedopac.rendering.*;
 
 public class Game {
 	private PhysicsWorld physicsWorld;
