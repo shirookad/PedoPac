@@ -34,6 +34,8 @@ public class Game {
 
 	private Shader textureShader;
 	private Shader diffuseShader;
+	private PostProcessShader deferredLightingShader;
+
 	private Vehicle vehicle;
 	private com.bulletphysics.linearmath.Transform out = new com.bulletphysics.linearmath.Transform();
 
@@ -67,6 +69,8 @@ public class Game {
 		levelMesh = ObjLoader.load("levels/level1_deco");
 		textureShader = new Shader("texture");
 		diffuseShader = new Shader("diffuse");
+		deferredLightingShader = new PostProcessShader("deferredLighting");
+
 		fbuf = BufferUtils.createFloatBuffer(16);
 
 		physicsWorld.addRigidBody(PhysicsWorld.createRigidBody(
@@ -185,8 +189,13 @@ public class Game {
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
 
-		textureShader.use();
-		geometryTextures[1].bind();
+		deferredLightingShader.use();
+		geometryTextures[2].bind(2);
+		deferredLightingShader.setUniform1i("depthBuffer", 2);
+		geometryTextures[1].bind(1);
+		deferredLightingShader.setUniform1i("geometryBuffer1", 1);
+		geometryTextures[0].bind(0);
+		deferredLightingShader.setUniform1i("geometryBuffer0", 0);
 
 		quadMesh.render();
 	}

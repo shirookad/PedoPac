@@ -1,6 +1,7 @@
 package com.naronco.pedopac.rendering;
 
 import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL13.*;
 
 import java.nio.*;
 
@@ -41,6 +42,11 @@ public class Texture2D {
 	}
 
 	public void bind() {
+		bind(0);
+	}
+
+	public void bind(int slot) {
+		glActiveTexture(GL_TEXTURE0 + slot);
 		glBindTexture(GL_TEXTURE_2D, texture);
 	}
 

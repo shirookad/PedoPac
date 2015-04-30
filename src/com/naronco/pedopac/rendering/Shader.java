@@ -31,9 +31,7 @@ public class Shader {
 		glDeleteProgram(program);
 	}
 
-	private static int loadShader(String filename, int type) {
-		String content = Util.loadResourceText(filename);
-
+	protected final String markShaderType(String content, int type) {
 		switch (type) {
 		case GL_VERTEX_SHADER:
 			content = "#define _COMPILING_VERTEX\n" + content;
@@ -43,13 +41,24 @@ public class Shader {
 			break;
 		}
 
+		return content;
+	}
+
+	protected String modifyContent(String content, int type) {
+		content = markShaderType(content, type);
+
 		if (DEFERRED_SHADING) {
 			content = "#define _DEFERRED_SHADING\n" + content;
 			content = "#define _WRITE_TO_TEXTURES(c, n) gl_FragData[0] = vec4(c.rgb, 1.0); gl_FragData[1] = vec4(normalize(n) * 0.5 + 0.5, 1.0)\n"
 					+ content;
 		}
 
-		content = "#version 130\n" + content;
+		return content;
+	}
+
+	protected final int loadShader(String filename, int type) {
+		String content = Util.loadResourceText(filename);
+		content = modifyContent(content, type);
 
 		int shader = glCreateShader(type);
 
