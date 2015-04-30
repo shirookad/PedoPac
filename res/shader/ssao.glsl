@@ -9,6 +9,9 @@ uniform float aspectRatio;
 uniform sampler2D randomTexture;
 uniform sampler2D kernelTexture;
 
+#define SAMPLE_KERNEL_SIZE 16.0
+#define RADIUS 1.5
+
 void main() {
 	vec3 viewRay = normalize(vec3(
 		(gl_TexCoord[0].x * 2.0 - 1.0) * tanHalfFov * aspectRatio,
@@ -26,10 +29,10 @@ void main() {
 	mat3 tbn = mat3(tangent, bitangent, normal);
 	
 	float occlusion = 0.0;
-	for (int i = 0; i < 16; ++i) {
+	for (int i = 0; i < SAMPLE_KERNEL_SIZE; ++i) {
 		vec2 kernelUV = vec2(float(i % 4) * 0.25, float(i >> 2) * 0.25);
 		vec3 sample = tbn * texture2D(kernelTexture, kernelUV).xyz;
-		sample = sample * 1.5 + origin;
+		sample = sample * RADIUS + origin;
 	  	
 		vec4 offset = vec4(sample, 1.0);
 		offset = projectionMatrix * offset;
@@ -38,11 +41,11 @@ void main() {
 	  
 		float sampledDepth = sampleDepth(offset.xy);
 	
-		float rangeCheck = abs(origin.z - sampledDepth) < 1.5 ? 1.0 : 0.0;
+		float rangeCheck = abs(origin.z - sampledDepth) < RADIUS ? 1.0 : 0.0;
 		occlusion += (sampledDepth <= sample.z ? 1.0 : 0.0) * rangeCheck;
 	}
 	
-	occlusion = 1.0 - (occlusion / float(16));
+	occlusion = 1.0 - (occlusion / SAMPLE_KERNEL_SIZE);
 	occlusion = pow(occlusion, 2.0);
 
 	gl_FragColor = vec4(vec3(occlusion), 1.0);

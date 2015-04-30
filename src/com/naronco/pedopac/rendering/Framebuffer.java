@@ -25,7 +25,7 @@ public class Framebuffer {
 		}
 
 		Set<Integer> drawBuffers = textures.keySet();
-		drawBuffers.remove(GL_DEPTH_ATTACHMENT);
+		//drawBuffers.remove(GL_DEPTH_ATTACHMENT);
 		glDrawBuffers(Util.createIntBufferFromSet(drawBuffers));
 
 		int status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
