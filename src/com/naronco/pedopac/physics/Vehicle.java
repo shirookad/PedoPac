@@ -35,8 +35,8 @@ public class Vehicle {
 	private static float suspensionDamping = 2.3f;
 	private static float suspensionCompression = 4.4f;
 	private static float rollInfluence = 0.1f;
-	private static float wheelWidth = 0.381f;
-	private static float wheelRadius = 0.391f;
+	private static float wheelWidth = 0.512f;
+	private static float wheelRadius = 0.587f;
 
 	private static final float suspensionRestLength = 0.6f;
 
@@ -50,8 +50,8 @@ public class Vehicle {
 	public void create(PhysicsWorld world) {
 		Transform tr = new Transform();
 		tr.setIdentity();
-		CollisionShape chassisShape = new BoxShape(new Vector3f(3.0f, 1.0f,
-				1.0f));
+		CollisionShape chassisShape = new BoxShape(new Vector3f(1.0f, 1.0f,
+				3.0f));
 
 		CompoundShape compound = new CompoundShape();
 		Transform localTrans = new Transform();
@@ -69,8 +69,6 @@ public class Vehicle {
 		Transform tr2 = new Transform();
 		tr2.setIdentity();
 		tr2.origin.set(0, 1, 0);
-		tr2.setRotation(new Quat4f(0.7071067811865476f, 0.7071067811865476f, 0,
-				0));
 		carChassis.setCenterOfMassTransform(tr2);
 		carChassis.setLinearVelocity(new Vector3f(0, 0, 0));
 		carChassis.setAngularVelocity(new Vector3f(0, 0, 0));
@@ -101,22 +99,22 @@ public class Vehicle {
 
 			vehicle.setCoordinateSystem(rightIndex, upIndex, forwardIndex);
 
-			vehicle.addWheel(new Vector3f(-2.5f, h, -1.0f + wheelWidth),
-					wheelDirectionCS0, wheelAxleCS, suspensionRestLength,
-					wheelRadius, tuning, isFrontWheel);
+			vehicle.addWheel(new Vector3f(-1.0f, h, 2.2f), wheelDirectionCS0,
+					wheelAxleCS, suspensionRestLength, wheelRadius, tuning,
+					isFrontWheel);
 
-			vehicle.addWheel(new Vector3f(-2.5f, h, 1.0f - wheelWidth),
-					wheelDirectionCS0, wheelAxleCS, suspensionRestLength,
-					wheelRadius, tuning, isFrontWheel);
+			vehicle.addWheel(new Vector3f(1.0f, h, 2.2f), wheelDirectionCS0,
+					wheelAxleCS, suspensionRestLength, wheelRadius, tuning,
+					isFrontWheel);
 
 			isFrontWheel = false;
-			vehicle.addWheel(new Vector3f(2.5f, h, -1.0f + wheelWidth),
-					wheelDirectionCS0, wheelAxleCS, suspensionRestLength,
-					wheelRadius, tuning, isFrontWheel);
+			vehicle.addWheel(new Vector3f(-1.0f, h, -1.7f), wheelDirectionCS0,
+					wheelAxleCS, suspensionRestLength, wheelRadius, tuning,
+					isFrontWheel);
 
-			vehicle.addWheel(new Vector3f(2.5f, h, 1.0f - wheelWidth),
-					wheelDirectionCS0, wheelAxleCS, suspensionRestLength,
-					wheelRadius, tuning, isFrontWheel);
+			vehicle.addWheel(new Vector3f(1.0f, h, -1.7f), wheelDirectionCS0,
+					wheelAxleCS, suspensionRestLength, wheelRadius, tuning,
+					isFrontWheel);
 
 			for (int i = 0; i < vehicle.getNumWheels(); i++) {
 				WheelInfo wheel = vehicle.getWheelInfo(i);
@@ -145,14 +143,12 @@ public class Vehicle {
 	}
 
 	public void update() {
-		int wheelIndex = 2;
-		vehicle.applyEngineForce(gEngineForce, wheelIndex);
-		vehicle.setBrake(gBreakingForce, wheelIndex);
-		wheelIndex = 3;
-		vehicle.applyEngineForce(gEngineForce, wheelIndex);
-		vehicle.setBrake(gBreakingForce, wheelIndex);
+		for (int i = 0; i < 4; i++) {
+			vehicle.applyEngineForce(gEngineForce, i);
+			vehicle.setBrake(gBreakingForce, i);
+		}
 
-		wheelIndex = 0;
+		int wheelIndex = 0;
 		vehicle.setSteeringValue(gVehicleSteering, wheelIndex);
 		wheelIndex = 1;
 		vehicle.setSteeringValue(gVehicleSteering, wheelIndex);
