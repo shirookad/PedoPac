@@ -43,6 +43,23 @@ public class PhysicsWorld {
 		return new RigidBody(rbInfo);
 	}
 
+	public static RigidBody createRigidBody(CollisionShape shape, float mass, Transform start) {
+		Vector3f localInertia = new Vector3f(0, 0, 0);
+		if (mass != 0)
+			shape.calculateLocalInertia(mass, localInertia);
+
+		DefaultMotionState myMotionState = new DefaultMotionState(start);
+		RigidBodyConstructionInfo rbInfo = new RigidBodyConstructionInfo(mass,
+				myMotionState, shape, localInertia);
+
+		return new RigidBody(rbInfo);
+	}
+	
+	public DynamicsWorld getDynamicsWorld()
+	{
+		return dynamicsWorld;
+	}
+
 	public void addRigidBody(RigidBody rigidBody) {
 		dynamicsWorld.addRigidBody(rigidBody);
 	}
