@@ -2,6 +2,10 @@ package com.naronco.pedopac.rendering;
 
 import static org.lwjgl.opengl.GL20.*;
 
+import java.nio.*;
+
+import javax.vecmath.*;
+
 import com.naronco.pedopac.*;
 
 public class Shader {
@@ -51,7 +55,8 @@ public class Shader {
 			content = "#define _DEFERRED_SHADING\n" + content;
 			content = "#define _WRITE_TO_TEXTURES(p, c, n) gl_FragData[0] = vec4(c.rgb, 1.0); gl_FragData[1] = vec4(normalize(n) * 0.5 + 0.5, 1.0);"
 					+ //
-					"gl_FragDepth = (2 * gl_DepthRange.near) / (gl_DepthRange.far + gl_DepthRange.near - p.z * (gl_DepthRange.far - gl_DepthRange.near));\n" + //
+//					"gl_FragDepth = (2 * gl_DepthRange.near) / (gl_DepthRange.far + gl_DepthRange.near - p.z * (gl_DepthRange.far - gl_DepthRange.near));\n"
+//					+ //
 					content;
 		}
 
@@ -109,6 +114,15 @@ public class Shader {
 
 	public void setUniform4f(String name, float v0, float v1, float v2, float v3) {
 		glUniform4f(glGetUniformLocation(program, name), v0, v1, v2, v3);
+	}
+
+	public void setUniformMatrix4f(String name, Matrix4f matrix) {
+		glUniformMatrix4(glGetUniformLocation(program, name), false,
+				Util.createFloatBufferFromMatrix(matrix));
+	}
+
+	public void setUniformMatrix4f(String name, FloatBuffer matrix) {
+		glUniformMatrix4(glGetUniformLocation(program, name), false, matrix);
 	}
 
 	public int getProgram() {

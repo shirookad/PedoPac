@@ -4,6 +4,8 @@ import java.io.*;
 import java.nio.*;
 import java.util.*;
 
+import javax.vecmath.*;
+
 import org.lwjgl.*;
 
 import com.naronco.pedopac.rendering.*;
@@ -69,5 +71,28 @@ public class Util {
 			b.put(i);
 		b.flip();
 		return b;
+	}
+
+	public static FloatBuffer createFloatBufferFromArray(float[] array) {
+		FloatBuffer fb = BufferUtils.createFloatBuffer(array.length);
+		fb.put(array).flip();
+		return fb;
+	}
+
+	public static FloatBuffer createFloatBufferFromArray(Vector3f[] array) {
+		FloatBuffer fb = BufferUtils.createFloatBuffer(array.length * 3);
+		for (Vector3f v : array) {
+			fb.put(v.x).put(v.y).put(v.z);
+		}
+		return (FloatBuffer) fb.flip();
+	}
+
+	public static FloatBuffer createFloatBufferFromMatrix(Matrix4f matrix) {
+		FloatBuffer fb = BufferUtils.createFloatBuffer(16);
+		fb.put(matrix.m00).put(matrix.m01).put(matrix.m02).put(matrix.m03);
+		fb.put(matrix.m10).put(matrix.m11).put(matrix.m12).put(matrix.m13);
+		fb.put(matrix.m20).put(matrix.m21).put(matrix.m22).put(matrix.m23);
+		fb.put(matrix.m30).put(matrix.m31).put(matrix.m32).put(matrix.m33);
+		return (FloatBuffer) fb.flip();
 	}
 }
