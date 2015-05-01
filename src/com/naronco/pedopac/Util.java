@@ -95,4 +95,10 @@ public class Util {
 		fb.put(matrix.m30).put(matrix.m31).put(matrix.m32).put(matrix.m33);
 		return (FloatBuffer) fb.flip();
 	}
+
+	public static Matrix4f createMatrixFromFloatBuffer(FloatBuffer fb) {
+		float[] f = new float[16];
+		fb.get(f);
+		return new Matrix4f(f);
+	}
 }

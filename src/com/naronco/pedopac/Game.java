@@ -38,6 +38,9 @@ public class Game {
 	private PostProcessShader deferredLightingShader;
 	private PostProcessShader ssaoShader;
 
+	private PostProcessShader horizontalGaussianBlurShader;
+	private PostProcessShader verticalGaussianBlurShader;
+	
 	private Texture2D randomTexture;
 	private Texture2D kernelTexture;
 
@@ -72,10 +75,11 @@ public class Game {
 		carMesh = ObjLoader.load("Hummer");
 		wheelMesh = ObjLoader.load("Wheel");
 		levelMesh = ObjLoader.load("levels/level1_deco");
-		textureShader = new Shader("texture");
-		diffuseShader = new Shader("diffuse");
-		deferredLightingShader = new PostProcessShader("deferredLighting");
-		ssaoShader = new PostProcessShader("ssao");
+		textureShader = new Shader("texture", null);
+		diffuseShader = new Shader("diffuse", null);
+		deferredLightingShader = new PostProcessShader("deferredLighting",
+				screenBuffer);
+		ssaoShader = new PostProcessShader("ssao", screenBuffer);
 
 		Random random = new Random();
 
@@ -103,6 +107,13 @@ public class Game {
 		}
 		kernelTexture = new Texture2D(SSAO_KERNEL_SIZE, SSAO_KERNEL_SIZE,
 				GL_RGB, GL_RGB, Util.createFloatBufferFromArray(kernel));
+
+		ssaoShader.addInputTexture("kernelTexture", kernelTexture);
+		ssaoShader.addInputTexture("randomTexture", randomTexture);
+
+		ssaoShader.addInputTexture("geometryBuffer0", geometryTextures[0]);
+		ssaoShader.addInputTexture("geometryBuffer1", geometryTextures[1]);
+		ssaoShader.addInputTexture("depthBuffer", geometryTextures[2]);
 
 		fbuf = BufferUtils.createFloatBuffer(16);
 
@@ -185,8 +196,8 @@ public class Game {
 		gluPerspective(90.0f, Display.getWidth() / (float) Display.getHeight(),
 				Shader.Z_NEAR, Shader.Z_FAR);
 
-		FloatBuffer projectionMatrix = BufferUtils.createFloatBuffer(16);
-		glGetFloat(GL_PROJECTION_MATRIX, projectionMatrix);
+		FloatBuffer projectionMatrixBuffer = BufferUtils.createFloatBuffer(16);
+		glGetFloat(GL_PROJECTION_MATRIX, projectionMatrixBuffer);
 
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
@@ -271,30 +282,12 @@ public class Game {
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
 
-		ssaoShader.use();
-
-		ssaoShader.setUniform2f("screenSize", Display.getWidth(),
+		Matrix4f projectionMatrix = Util
+				.createMatrixFromFloatBuffer(projectionMatrixBuffer);
+		Vector2f screenSize = new Vector2f(Display.getWidth(),
 				Display.getHeight());
-		ssaoShader.setUniform1f("tanHalfFov",
-				(float) Math.tan(Math.toRadians(90) * 0.5f));
-		ssaoShader.setUniform1f("aspectRatio", Display.getWidth()
-				/ (float) Display.getHeight());
 
-		ssaoShader.setUniformMatrix4f("projectionMatrix", projectionMatrix);
-
-		randomTexture.bind(4);
-		ssaoShader.setUniform1i("randomTexture", 4);
-
-		kernelTexture.bind(3);
-		ssaoShader.setUniform1i("kernelTexture", 3);
-
-		geometryTextures[2].bind(2);
-		ssaoShader.setUniform1i("depthBuffer", 2);
-		geometryTextures[1].bind(1);
-		ssaoShader.setUniform1i("geometryBuffer1", 1);
-		geometryTextures[0].bind(0);
-		ssaoShader.setUniform1i("geometryBuffer0", 0);
-
+		ssaoShader.render(projectionMatrix, screenSize);
 		quadMesh.render();
 	}
 }

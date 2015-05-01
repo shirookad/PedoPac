@@ -1,11 +1,5 @@
 #extension GL_EXT_gpu_shader4 : enable
 
-uniform mat4 projectionMatrix;
-
-uniform vec2 screenSize;
-uniform float tanHalfFov;
-uniform float aspectRatio;
-
 uniform sampler2D randomTexture;
 uniform sampler2D kernelTexture;
 

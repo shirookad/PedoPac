@@ -3,6 +3,7 @@ package com.naronco.pedopac.rendering;
 import static org.lwjgl.opengl.GL20.*;
 
 import java.nio.*;
+import java.util.*;
 
 import javax.vecmath.*;
 
@@ -13,9 +14,12 @@ public class Shader {
 	public static final float Z_NEAR = 0.01f;
 	public static final float Z_FAR = 100.0f;
 
-	private int program;
+	protected int program;
+	protected List<String> preprocessorDirectives;
 
-	public Shader(String name) {
+	public Shader(String name, List<String> preprocessorDirectives) {
+		this.preprocessorDirectives = preprocessorDirectives;
+
 		program = glCreateProgram();
 
 		int vertexShader = loadShader("/shader/" + name + ".glsl",
@@ -47,6 +51,15 @@ public class Shader {
 			break;
 		}
 
+		return content;
+	}
+
+	protected final String addPreprocessorDirectives(String content) {
+		if (preprocessorDirectives != null) {
+			for (String directive : preprocessorDirectives) {
+				content = directive + "\n" + content;
+			}
+		}
 		return content;
 	}
 
@@ -90,45 +103,62 @@ public class Shader {
 		glUseProgram(program);
 	}
 
-	public void setUniform1i(String name, int v0) {
+	public void set(String name, int v0) {
 		glUniform1i(glGetUniformLocation(program, name), v0);
 	}
 
-	public void setUniform2i(String name, int v0, int v1) {
+	public void set(String name, int v0, int v1) {
 		glUniform2i(glGetUniformLocation(program, name), v0, v1);
 	}
 
-	public void setUniform3i(String name, int v0, int v1, int v2) {
+	public void set(String name, int v0, int v1, int v2) {
 		glUniform3i(glGetUniformLocation(program, name), v0, v1, v2);
 	}
 
-	public void setUniform4i(String name, int v0, int v1, int v2, int v3) {
+	public void set(String name, int v0, int v1, int v2, int v3) {
 		glUniform4i(glGetUniformLocation(program, name), v0, v1, v2, v3);
 	}
 
-	public void setUniform1f(String name, float v0) {
+	public void set(String name, float v0) {
 		glUniform1f(glGetUniformLocation(program, name), v0);
 	}
 
-	public void setUniform2f(String name, float v0, float v1) {
+	public void set(String name, float v0, float v1) {
 		glUniform2f(glGetUniformLocation(program, name), v0, v1);
 	}
 
-	public void setUniform3f(String name, float v0, float v1, float v2) {
+	public void set(String name, float v0, float v1, float v2) {
 		glUniform3f(glGetUniformLocation(program, name), v0, v1, v2);
 	}
 
-	public void setUniform4f(String name, float v0, float v1, float v2, float v3) {
+	public void set(String name, float v0, float v1, float v2, float v3) {
 		glUniform4f(glGetUniformLocation(program, name), v0, v1, v2, v3);
 	}
 
-	public void setUniformMatrix4f(String name, Matrix4f matrix) {
+	public void set(String name, Vector2f v) {
+		set(name, v.x, v.y);
+	}
+
+	public void set(String name, Vector3f v) {
+		set(name, v.x, v.y, v.z);
+	}
+
+	public void set(String name, Vector4f v) {
+		set(name, v.x, v.y, v.z, v.w);
+	}
+
+	public void set(String name, Matrix4f matrix) {
 		glUniformMatrix4(glGetUniformLocation(program, name), false,
 				Util.createFloatBufferFromMatrix(matrix));
 	}
 
-	public void setUniformMatrix4f(String name, FloatBuffer matrix) {
+	public void set(String name, FloatBuffer matrix) {
 		glUniformMatrix4(glGetUniformLocation(program, name), false, matrix);
+	}
+
+	public void set(String name, Texture2D texture, int slot) {
+		texture.bind(slot);
+		set(name, slot);
 	}
 
 	public int getProgram() {
