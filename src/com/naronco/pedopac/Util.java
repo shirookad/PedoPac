@@ -26,6 +26,15 @@ public class Util {
 		}
 	}
 
+	public static File getResourceFileHandle(String filename) {
+		try {
+			return new File(Shader.class.getResource(filename).toURI());
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
 	public static List<String> loadResourceLines(String filename) {
 		try {
 			BufferedReader reader = new BufferedReader(new InputStreamReader(

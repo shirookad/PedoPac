@@ -43,10 +43,10 @@ public class ObjLoader {
 				}
 			}
 		}
-		
+
 		Vertex[] vert = new Vertex[vertices.size()];
 		int i = 0;
-		for(Vertex v : vertices)
+		for (Vertex v : vertices)
 			vert[i++] = v;
 
 		return new Mesh(vert, Util.toIntArray(indices));

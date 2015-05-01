@@ -4,9 +4,12 @@ import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL30.*;
 import static org.lwjgl.util.glu.GLU.*;
 
+import java.awt.image.*;
+import java.io.*;
 import java.nio.*;
 import java.util.*;
 
+import javax.imageio.*;
 import javax.vecmath.*;
 
 import org.lwjgl.*;
@@ -14,6 +17,7 @@ import org.lwjgl.input.*;
 import org.lwjgl.opengl.*;
 
 import com.bulletphysics.collision.shapes.*;
+import com.bulletphysics.dynamics.*;
 import com.naronco.pedopac.physics.*;
 import com.naronco.pedopac.rendering.*;
 
@@ -30,7 +34,8 @@ public class Game {
 			0, 1, 2, 0, 2, 3 });
 
 	private PhysicsWorld physicsWorld;
-	private Mesh carMesh, wheelMesh, levelMesh;
+	private Mesh carMesh, wheelMesh, levelMesh, heightmap;
+	private RigidBody heightBody;
 	private FloatBuffer fbuf;
 
 	private Shader textureShader;
@@ -139,10 +144,24 @@ public class Game {
 		fbuf = BufferUtils.createFloatBuffer(16);
 
 		out.setIdentity();
-		out.origin.set(0, -10, 0);
 
-		physicsWorld.addRigidBody(PhysicsWorld.createRigidBody(new BoxShape(
-				new Vector3f(1000, 10, 1000)), 0, out));
+		float[][] data = new float[128][128];
+
+		try {
+			BufferedImage img = ImageIO.read(Util
+					.getResourceFileHandle("/heightmap/level0.png"));
+			for (int x = 0; x < 128; x++) {
+				for (int y = 0; y < 128; y++) {
+					data[x][y] = ((img.getRGB(x, y) << 16) & 0xFF) * 0.03125f;
+				}
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		heightBody = PhysicsWorld.createHeightmap(data, 128, 128, 10);
+		physicsWorld.addRigidBody(heightBody);
+		heightmap = Heightmap.fromData(data, 128, 128, 5);
 
 		out.setIdentity();
 
@@ -299,6 +318,19 @@ public class Game {
 			fbuf.flip();
 			glMultMatrix(fbuf);
 			wheelMesh.render();
+		}
+		glPopMatrix();
+
+		glPushMatrix();
+		{
+			heightBody.getCenterOfMassTransform(out);
+			diffuseShader.use();
+			float[] f = new float[16];
+			out.getOpenGLMatrix(f);
+			fbuf.put(f);
+			fbuf.flip();
+			glMultMatrix(fbuf);
+			heightmap.render();
 		}
 		glPopMatrix();
 
