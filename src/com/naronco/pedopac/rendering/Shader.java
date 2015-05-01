@@ -10,6 +10,8 @@ import com.naronco.pedopac.*;
 
 public class Shader {
 	public static final boolean DEFERRED_SHADING = true;
+	public static final float Z_NEAR = 0.01f;
+	public static final float Z_FAR = 100.0f;
 
 	private int program;
 
@@ -55,8 +57,12 @@ public class Shader {
 			content = "#define _DEFERRED_SHADING\n" + content;
 			content = "#define _WRITE_TO_TEXTURES(p, c, n) gl_FragData[0] = vec4(c.rgb, 1.0); gl_FragData[1] = vec4(normalize(n) * 0.5 + 0.5, 1.0);"
 					+ //
-//					"gl_FragDepth = (2 * gl_DepthRange.near) / (gl_DepthRange.far + gl_DepthRange.near - p.z * (gl_DepthRange.far - gl_DepthRange.near));\n"
-//					+ //
+					"gl_FragDepth = (p.z - "
+					+ Z_NEAR
+					+ ") / ("
+					+ Z_FAR
+					+ " - "
+					+ Z_NEAR + ")\n" + //
 					content;
 		}
 

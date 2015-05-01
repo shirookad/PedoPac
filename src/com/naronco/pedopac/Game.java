@@ -84,6 +84,8 @@ public class Game {
 			noise[i] = new Vector3f(random.nextFloat() * 2.0f - 1.0f,
 					random.nextFloat() * 2.0f - 1.0f, 0.0f);
 			noise[i].normalize();
+			noise[i].scale(0.5f);
+			noise[i].add(new Vector3f(0.5f, 0.5f, 0.5f));
 		}
 		randomTexture = new Texture2D(4, 4, GL_RGB, GL_RGB,
 				Util.createFloatBufferFromArray(noise));
@@ -95,7 +97,9 @@ public class Game {
 			kernel[i].normalize();
 			float scale = i / (float) kernel.length;
 			scale = 0.1f + 0.9f * scale * scale;
-			kernel[i].scale(random.nextFloat() * scale);
+			kernel[i].scale(scale);
+			kernel[i].scale(0.5f);
+			kernel[i].add(new Vector3f(0.5f, 0.5f, 0.5f));
 		}
 		kernelTexture = new Texture2D(SSAO_KERNEL_SIZE, SSAO_KERNEL_SIZE,
 				GL_RGB, GL_RGB, Util.createFloatBufferFromArray(kernel));
@@ -104,10 +108,10 @@ public class Game {
 
 		out.setIdentity();
 		out.origin.set(0, -10, 0);
-		
-		physicsWorld.addRigidBody(PhysicsWorld.createRigidBody(
-				new BoxShape(new Vector3f(1000, 10, 1000)), 0, out));
-		
+
+		physicsWorld.addRigidBody(PhysicsWorld.createRigidBody(new BoxShape(
+				new Vector3f(1000, 10, 1000)), 0, out));
+
 		out.setIdentity();
 
 		vehicle = new Vehicle();
@@ -118,6 +122,10 @@ public class Game {
 		glClearDepth(1.0);
 	}
 
+	private Vector3f lastForward = null;
+	private Vector3f cameraPosition = new Vector3f();
+	private Vector3f lookAt = new Vector3f();
+
 	public void update(float delta) {
 		if (Keyboard.isKeyDown(Keyboard.KEY_A)) {
 			vehicle.steer(-1);
@@ -126,7 +134,7 @@ public class Game {
 		} else {
 			vehicle.steer(0);
 		}
-		
+
 		if (Keyboard.isKeyDown(Keyboard.KEY_W)) {
 			vehicle.accelerate(1);
 		} else if (Keyboard.isKeyDown(Keyboard.KEY_S)) {
@@ -139,6 +147,33 @@ public class Game {
 		vehicle.update();
 
 		physicsWorld.update(delta);
+
+		vehicle.getTransform(out);
+
+		float[] f = new float[16];
+		out.getOpenGLMatrix(f);
+
+		Matrix4f matrix = new Matrix4f(f);
+		Matrix3f rotationMatrix = new Matrix3f();
+		matrix.get(rotationMatrix);
+
+		Vector3f forward = new Vector3f(0, 0, 1);
+		rotationMatrix.transform(forward);
+
+		cameraPosition.set(out.origin);
+		lookAt.set(out.origin);
+
+		cameraPosition.y += 3;
+
+		forward.scale(5.0f);
+		if (lastForward == null) {
+			lastForward = forward;
+		} else {
+			lastForward.interpolate(forward, delta * 2.0f);
+		}
+
+		cameraPosition.x += lastForward.x;
+		cameraPosition.z -= lastForward.z;
 	}
 
 	public void render() {
@@ -148,7 +183,7 @@ public class Game {
 		glMatrixMode(GL_PROJECTION);
 		glLoadIdentity();
 		gluPerspective(90.0f, Display.getWidth() / (float) Display.getHeight(),
-				0.01f, 100.0f);
+				Shader.Z_NEAR, Shader.Z_FAR);
 
 		FloatBuffer projectionMatrix = BufferUtils.createFloatBuffer(16);
 		glGetFloat(GL_PROJECTION_MATRIX, projectionMatrix);
@@ -158,8 +193,8 @@ public class Game {
 
 		vehicle.getTransform(out);
 
-		gluLookAt(out.origin.x, out.origin.y + 3, out.origin.z - 5,
-				out.origin.x, out.origin.y, out.origin.z, 0, 1, 0);
+		gluLookAt(cameraPosition.x, cameraPosition.y, cameraPosition.z,
+				lookAt.x, lookAt.y, lookAt.z, 0, 1, 0);
 
 		glPushMatrix();
 		{
@@ -240,7 +275,8 @@ public class Game {
 
 		ssaoShader.setUniform2f("screenSize", Display.getWidth(),
 				Display.getHeight());
-		ssaoShader.setUniform1f("tanHalfFov", (float) Math.tan(90.0f * 0.5f));
+		ssaoShader.setUniform1f("tanHalfFov",
+				(float) Math.tan(Math.toRadians(90) * 0.5f));
 		ssaoShader.setUniform1f("aspectRatio", Display.getWidth()
 				/ (float) Display.getHeight());
 
