@@ -35,7 +35,7 @@ public class Vehicle {
 	private static float suspensionDamping = 2.3f;
 	private static float suspensionCompression = 4.4f;
 	private static float rollInfluence = 0.1f;
-	private static float wheelWidth = 0.512f;
+	private static float wheelWidth = 0.256f;
 	private static float wheelRadius = 0.587f;
 
 	private static final float suspensionRestLength = 0.6f;
@@ -50,7 +50,7 @@ public class Vehicle {
 	public void create(PhysicsWorld world) {
 		Transform tr = new Transform();
 		tr.setIdentity();
-		CollisionShape chassisShape = new BoxShape(new Vector3f(1.0f, 1.0f,
+		CollisionShape chassisShape = new BoxShape(new Vector3f(1.0f, 0.5f,
 				3.0f));
 
 		CompoundShape compound = new CompoundShape();
@@ -93,7 +93,7 @@ public class Vehicle {
 
 			world.getDynamicsWorld().addVehicle(vehicle);
 
-			float h = 0.4f;
+			float h = 0.6f;
 
 			boolean isFrontWheel = true;
 
@@ -145,13 +145,12 @@ public class Vehicle {
 	public void update() {
 		for (int i = 0; i < 4; i++) {
 			vehicle.applyEngineForce(gEngineForce, i);
-			vehicle.setBrake(gBreakingForce, i);
 		}
+		vehicle.setBrake(gBreakingForce, 0);
+		vehicle.setBrake(gBreakingForce, 1);
 
-		int wheelIndex = 0;
-		vehicle.setSteeringValue(gVehicleSteering, wheelIndex);
-		wheelIndex = 1;
-		vehicle.setSteeringValue(gVehicleSteering, wheelIndex);
+		vehicle.setSteeringValue(gVehicleSteering, 0);
+		vehicle.setSteeringValue(gVehicleSteering, 1);
 	}
 
 	public Transform getTransform(Transform t) {
