@@ -45,7 +45,7 @@ public class Game {
 
 	private PostProcessShader horizontalGaussianBlurShader;
 	private PostProcessShader verticalGaussianBlurShader;
-	
+
 	private Texture2D randomTexture;
 	private Texture2D kernelTexture;
 
@@ -123,22 +123,23 @@ public class Game {
 		fbuf = BufferUtils.createFloatBuffer(16);
 
 		out.setIdentity();
-		
+
 		float[][] data = new float[128][128];
 
 		try {
-			BufferedImage img = ImageIO.read(Util.getResourceFileHandle("/heightmap/level0.png"));
-			for(int x = 0; x < 128; x++)
-			{
-				for(int y = 0; y < 128; y++)
-				{
-					data[x][y] = ((img.getRGB(x, y) << 16) & 0xFF) * 0.03125f; // x / 32
+			BufferedImage img = ImageIO.read(Util
+					.getResourceFileHandle("/heightmap/level0.png"));
+			for (int x = 0; x < 128; x++) {
+				for (int y = 0; y < 128; y++) {
+					data[x][y] = ((img.getRGB(x, y) << 16) & 0xFF) * 0.03125f; // x
+																				// /
+																				// 32
 				}
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
+
 		heightBody = PhysicsWorld.createHeightmap(data, 128, 128, 10);
 		physicsWorld.addRigidBody(heightBody);
 		heightmap = Heightmap.fromData(data, 128, 128, 5);
@@ -226,7 +227,6 @@ public class Game {
 
 		gluLookAt(cameraPosition.x, cameraPosition.y, cameraPosition.z,
 				lookAt.x, lookAt.y, lookAt.z, 0, 1, 0);
-		
 
 		glPushMatrix();
 		{

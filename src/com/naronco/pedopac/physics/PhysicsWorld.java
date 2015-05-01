@@ -57,9 +57,9 @@ public class PhysicsWorld {
 
 		return new RigidBody(rbInfo);
 	}
-	
-	public static RigidBody createHeightmap(float[][] data, int width, int height, float xzScale)
-	{
+
+	public static RigidBody createHeightmap(float[][] data, int width,
+			int height, float xzScale) {
 		ByteBuffer vertices;
 
 		int vertStride = 4 * 3 /* sizeof(btVector3) */;
@@ -69,16 +69,16 @@ public class PhysicsWorld {
 
 		final int totalTriangles = 2 * (width - 1) * (height - 1);
 
-		vertices = ByteBuffer.allocateDirect(totalVerts * vertStride).order(ByteOrder.nativeOrder());
-		ByteBuffer gIndices = ByteBuffer.allocateDirect(totalTriangles * 3 * 4).order(ByteOrder.nativeOrder());
+		vertices = ByteBuffer.allocateDirect(totalVerts * vertStride).order(
+				ByteOrder.nativeOrder());
+		ByteBuffer gIndices = ByteBuffer.allocateDirect(totalTriangles * 3 * 4)
+				.order(ByteOrder.nativeOrder());
 
 		Vector3f tmp = new Vector3f();
 		for (int i = 0; i < width; i++) {
 			for (int j = 0; j < height; j++) {
 				float wl = 0.2f;
-				tmp.set(
-						(i - width * 0.5f) * xzScale,
-						data[i][j],
+				tmp.set((i - width * 0.5f) * xzScale, data[i][j],
 						(j - height * 0.5f) * xzScale);
 
 				int index = i + j * width;
@@ -102,18 +102,18 @@ public class PhysicsWorld {
 		}
 		gIndices.flip();
 
-		TriangleIndexVertexArray indexVertexArrays = new TriangleIndexVertexArray(totalTriangles,
-				gIndices,
-				indexStride,
-				totalVerts, vertices, vertStride);
+		TriangleIndexVertexArray indexVertexArrays = new TriangleIndexVertexArray(
+				totalTriangles, gIndices, indexStride, totalVerts, vertices,
+				vertStride);
 
-		boolean useQuantizedAabbCompression = true;
-		BvhTriangleMeshShape groundShape = new BvhTriangleMeshShape(indexVertexArrays, useQuantizedAabbCompression);
+		BvhTriangleMeshShape groundShape = new BvhTriangleMeshShape(
+				indexVertexArrays, true);
 
 		Transform transform = new Transform();
 		transform.setIdentity();
-		transform.origin.set((width - 1) * 0.5f * xzScale, 0, (height - 1) * 0.5f * xzScale);
-		
+		transform.origin.set((width - 1) * 0.5f * xzScale, 0, (height - 1)
+				* 0.5f * xzScale);
+
 		return createRigidBody(groundShape, 0, transform);
 
 	}
