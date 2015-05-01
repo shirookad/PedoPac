@@ -1,11 +1,18 @@
 package com.naronco.pedopac.rendering;
 
 import static org.lwjgl.opengl.GL20.*;
+import static org.lwjgl.opengl.GL21.*;
+import static org.lwjgl.opengl.GL30.*;
+import static org.lwjgl.opengl.GL31.*;
+import static org.lwjgl.opengl.GL32.*;
+import static org.lwjgl.opengl.GL33.*;
 
 import java.nio.*;
 import java.util.*;
 
 import javax.vecmath.*;
+
+import org.lwjgl.*;
 
 import com.naronco.pedopac.*;
 
@@ -147,6 +154,11 @@ public class Shader {
 		set(name, v.x, v.y, v.z, v.w);
 	}
 
+	public void set(String name, Matrix3f matrix) {
+		glUniformMatrix3(glGetUniformLocation(program, name), false,
+				Util.createFloatBufferFromMatrix(matrix));
+	}
+
 	public void set(String name, Matrix4f matrix) {
 		glUniformMatrix4(glGetUniformLocation(program, name), false,
 				Util.createFloatBufferFromMatrix(matrix));
@@ -154,6 +166,14 @@ public class Shader {
 
 	public void set(String name, FloatBuffer matrix) {
 		glUniformMatrix4(glGetUniformLocation(program, name), false, matrix);
+	}
+
+	public void set(String name, Vector2f[] v) {
+		FloatBuffer fb = BufferUtils.createFloatBuffer(v.length * 2);
+		for (Vector2f vec : v) {
+			fb.put(vec.x).put(vec.y);
+		}
+		glUniform2(glGetUniformLocation(program, name), (FloatBuffer) fb.flip());
 	}
 
 	public void set(String name, Texture2D texture, int slot) {

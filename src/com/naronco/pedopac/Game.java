@@ -40,7 +40,11 @@ public class Game {
 
 	private PostProcessShader horizontalGaussianBlurShader;
 	private PostProcessShader verticalGaussianBlurShader;
-	
+
+	private Texture2D ssaoOutput, horizontalGaussianBlurOutput;
+
+	private Vector2f[] kernel;
+
 	private Texture2D randomTexture;
 	private Texture2D kernelTexture;
 
@@ -79,37 +83,54 @@ public class Game {
 		diffuseShader = new Shader("diffuse", null);
 		deferredLightingShader = new PostProcessShader("deferredLighting",
 				screenBuffer);
+
+		ssaoOutput = new Texture2D(width, height, GL_RGBA8, GL_RGBA,
+				(ByteBuffer) null);
+		horizontalGaussianBlurOutput = new Texture2D(width, height, GL_RGBA8,
+				GL_RGBA, (ByteBuffer) null);
+
 		ssaoShader = new PostProcessShader("ssao", screenBuffer);
+
+		horizontalGaussianBlurShader = new PostProcessShader("gaussianBlur",
+				horizontalGaussianBlurOutput);
+		verticalGaussianBlurShader = new PostProcessShader("gaussianBlur",
+				screenBuffer, Arrays.asList("#define _GAUSSIANBLUR_VERTICAL"));
 
 		Random random = new Random();
 
-		Vector3f[] noise = new Vector3f[16];
-		for (int i = 0; i < noise.length; ++i) {
-			noise[i] = new Vector3f(random.nextFloat() * 2.0f - 1.0f,
-					random.nextFloat() * 2.0f - 1.0f, 0.0f);
-			noise[i].normalize();
-			noise[i].scale(0.5f);
-			noise[i].add(new Vector3f(0.5f, 0.5f, 0.5f));
-		}
-		randomTexture = new Texture2D(4, 4, GL_RGB, GL_RGB,
-				Util.createFloatBufferFromArray(noise));
+		// Vector3f[] noise = new Vector3f[16];
+		// for (int i = 0; i < noise.length; ++i) {
+		// noise[i] = new Vector3f(random.nextFloat() * 2.0f - 1.0f,
+		// random.nextFloat() * 2.0f - 1.0f, 0.0f);
+		// noise[i].normalize();
+		// noise[i].scale(0.5f);
+		// noise[i].add(new Vector3f(0.5f, 0.5f, 0.5f));
+		// }
+		// randomTexture = new Texture2D(4, 4, GL_RGB, GL_RGB,
+		// Util.createFloatBufferFromArray(noise));
+		//
+		// Vector3f[] kernel = new Vector3f[SSAO_KERNEL_SIZE *
+		// SSAO_KERNEL_SIZE];
+		// for (int i = 0; i < kernel.length; ++i) {
+		// kernel[i] = new Vector3f(random.nextFloat() * 2.0f - 1.0f,
+		// random.nextFloat() * 2.0f - 1.0f, random.nextFloat());
+		// kernel[i].normalize();
+		// float scale = i / (float) kernel.length;
+		// scale = 0.1f + 0.9f * scale * scale;
+		// kernel[i].scale(scale);
+		// kernel[i].scale(0.5f);
+		// kernel[i].add(new Vector3f(0.5f, 0.5f, 0.5f));
+		// }
+		// kernelTexture = new Texture2D(SSAO_KERNEL_SIZE, SSAO_KERNEL_SIZE,
+		// GL_RGB, GL_RGB, Util.createFloatBufferFromArray(kernel));
 
-		Vector3f[] kernel = new Vector3f[SSAO_KERNEL_SIZE * SSAO_KERNEL_SIZE];
+		kernel = new Vector2f[16];
 		for (int i = 0; i < kernel.length; ++i) {
-			kernel[i] = new Vector3f(random.nextFloat() * 2.0f - 1.0f,
-					random.nextFloat() * 2.0f - 1.0f, random.nextFloat());
+			kernel[i] = new Vector2f(random.nextFloat() * 2 - 1,
+					random.nextFloat() * 2 - 1);
 			kernel[i].normalize();
-			float scale = i / (float) kernel.length;
-			scale = 0.1f + 0.9f * scale * scale;
-			kernel[i].scale(scale);
-			kernel[i].scale(0.5f);
-			kernel[i].add(new Vector3f(0.5f, 0.5f, 0.5f));
+			kernel[i].scale(random.nextFloat());
 		}
-		kernelTexture = new Texture2D(SSAO_KERNEL_SIZE, SSAO_KERNEL_SIZE,
-				GL_RGB, GL_RGB, Util.createFloatBufferFromArray(kernel));
-
-		ssaoShader.addInputTexture("kernelTexture", kernelTexture);
-		ssaoShader.addInputTexture("randomTexture", randomTexture);
 
 		ssaoShader.addInputTexture("geometryBuffer0", geometryTextures[0]);
 		ssaoShader.addInputTexture("geometryBuffer1", geometryTextures[1]);
@@ -209,9 +230,11 @@ public class Game {
 
 		glPushMatrix();
 		{
-			diffuseShader.use();
 			float[] f = new float[16];
 			out.getOpenGLMatrix(f);
+			diffuseShader.use();
+			diffuseShader.set("worldMatrix", (FloatBuffer) BufferUtils
+					.createFloatBuffer(16).put(f).flip());
 			fbuf.put(f);
 			fbuf.flip();
 			glMultMatrix(fbuf);
@@ -222,9 +245,11 @@ public class Game {
 		glPushMatrix();
 		{
 			vehicle.getWheelTransform(0, out);
-			diffuseShader.use();
 			float[] f = new float[16];
 			out.getOpenGLMatrix(f);
+			diffuseShader.use();
+			diffuseShader.set("worldMatrix", (FloatBuffer) BufferUtils
+					.createFloatBuffer(16).put(f).flip());
 			fbuf.put(f);
 			fbuf.flip();
 			glMultMatrix(fbuf);
@@ -235,9 +260,11 @@ public class Game {
 		glPushMatrix();
 		{
 			vehicle.getWheelTransform(1, out);
-			diffuseShader.use();
 			float[] f = new float[16];
 			out.getOpenGLMatrix(f);
+			diffuseShader.use();
+			diffuseShader.set("worldMatrix", (FloatBuffer) BufferUtils
+					.createFloatBuffer(16).put(f).flip());
 			fbuf.put(f);
 			fbuf.flip();
 			glMultMatrix(fbuf);
@@ -248,9 +275,11 @@ public class Game {
 		glPushMatrix();
 		{
 			vehicle.getWheelTransform(2, out);
-			diffuseShader.use();
 			float[] f = new float[16];
 			out.getOpenGLMatrix(f);
+			diffuseShader.use();
+			diffuseShader.set("worldMatrix", (FloatBuffer) BufferUtils
+					.createFloatBuffer(16).put(f).flip());
 			fbuf.put(f);
 			fbuf.flip();
 			glMultMatrix(fbuf);
@@ -261,15 +290,23 @@ public class Game {
 		glPushMatrix();
 		{
 			vehicle.getWheelTransform(3, out);
-			diffuseShader.use();
 			float[] f = new float[16];
 			out.getOpenGLMatrix(f);
+			diffuseShader.use();
+			diffuseShader.set("worldMatrix", (FloatBuffer) BufferUtils
+					.createFloatBuffer(16).put(f).flip());
 			fbuf.put(f);
 			fbuf.flip();
 			glMultMatrix(fbuf);
 			wheelMesh.render();
 		}
 		glPopMatrix();
+
+		Matrix4f identity = new Matrix4f();
+		identity.setIdentity();
+
+		diffuseShader.use();
+		diffuseShader.set("worldMatrix", identity);
 
 		levelMesh.render();
 
@@ -288,6 +325,19 @@ public class Game {
 				Display.getHeight());
 
 		ssaoShader.render(projectionMatrix, screenSize);
+		ssaoShader.set("kernel", kernel);
 		quadMesh.render();
+
+		/*
+		 * horizontalGaussianBlurShader .addInputTexture("inputTexture",
+		 * ssaoOutput); horizontalGaussianBlurShader.render(projectionMatrix,
+		 * screenSize); horizontalGaussianBlurShader.set("blurRadius", 2);
+		 * quadMesh.render();
+		 * 
+		 * verticalGaussianBlurShader.addInputTexture("inputTexture",
+		 * horizontalGaussianBlurOutput);
+		 * verticalGaussianBlurShader.render(projectionMatrix, screenSize);
+		 * verticalGaussianBlurShader.set("blurRadius", 2); quadMesh.render();
+		 */
 	}
 }

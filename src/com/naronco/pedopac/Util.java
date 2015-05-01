@@ -87,6 +87,14 @@ public class Util {
 		return (FloatBuffer) fb.flip();
 	}
 
+	public static FloatBuffer createFloatBufferFromMatrix(Matrix3f matrix) {
+		FloatBuffer fb = BufferUtils.createFloatBuffer(9);
+		fb.put(matrix.m00).put(matrix.m01).put(matrix.m02);
+		fb.put(matrix.m10).put(matrix.m11).put(matrix.m12);
+		fb.put(matrix.m20).put(matrix.m21).put(matrix.m22);
+		return (FloatBuffer) fb.flip();
+	}
+
 	public static FloatBuffer createFloatBufferFromMatrix(Matrix4f matrix) {
 		FloatBuffer fb = BufferUtils.createFloatBuffer(16);
 		fb.put(matrix.m00).put(matrix.m01).put(matrix.m02).put(matrix.m03);

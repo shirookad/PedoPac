@@ -30,6 +30,13 @@ public class PostProcessShader extends Shader {
 		this.outputBuffer = outputBuffer;
 	}
 
+	public PostProcessShader(String name, Framebuffer outputBuffer,
+			List<String> preprocessorDirectives) {
+		super(name, preprocessorDirectives);
+		this.inputTextures = new HashMap<>();
+		this.outputBuffer = outputBuffer;
+	}
+
 	@Override
 	protected String modifyContent(String content, int type) {
 		content = addPreprocessorDirectives(content);

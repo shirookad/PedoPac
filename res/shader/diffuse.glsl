@@ -4,6 +4,8 @@ varying vec3 normal;
 varying vec4 color;
 varying vec4 position;
 
+uniform mat4 worldMatrix;
+
 void main() {
 	color = gl_Color;
 	normal = gl_NormalMatrix * gl_Normal;
