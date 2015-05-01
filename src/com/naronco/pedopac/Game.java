@@ -131,9 +131,7 @@ public class Game {
 					.getResourceFileHandle("/heightmap/level0.png"));
 			for (int x = 0; x < 128; x++) {
 				for (int y = 0; y < 128; y++) {
-					data[x][y] = ((img.getRGB(x, y) << 16) & 0xFF) * 0.03125f; // x
-																				// /
-																				// 32
+					data[x][y] = ((img.getRGB(x, y) << 16) & 0xFF) * 0.03125f;
 				}
 			}
 		} catch (IOException e) {
