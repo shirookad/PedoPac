@@ -19,8 +19,8 @@ public class PhysicsWorld {
 		CollisionDispatcher dispatcher = new CollisionDispatcher(
 				collisionConfiguration);
 
-		Vector3f worldAabbMin = new Vector3f(-10000, -10000, -10000);
-		Vector3f worldAabbMax = new Vector3f(10000, 10000, 10000);
+		Vector3f worldAabbMin = new Vector3f(-1000, -1000, -1000);
+		Vector3f worldAabbMax = new Vector3f(1000, 1000, 1000);
 		int maxProxies = 1024;
 		AxisSweep3 overlappingPairCache = new AxisSweep3(worldAabbMin,
 				worldAabbMax, maxProxies);
@@ -56,66 +56,6 @@ public class PhysicsWorld {
 				myMotionState, shape, localInertia);
 
 		return new RigidBody(rbInfo);
-	}
-
-	public static RigidBody createHeightmap(float[][] data, int width,
-			int height, float xzScale) {
-		ByteBuffer vertices;
-
-		int vertStride = 4 * 3 /* sizeof(btVector3) */;
-		int indexStride = 3 * 4 /* 3*sizeof(int) */;
-
-		final int totalVerts = width * height;
-
-		final int totalTriangles = 2 * (width - 1) * (height - 1);
-
-		vertices = ByteBuffer.allocateDirect(totalVerts * vertStride).order(
-				ByteOrder.nativeOrder());
-		ByteBuffer gIndices = ByteBuffer.allocateDirect(totalTriangles * 3 * 4)
-				.order(ByteOrder.nativeOrder());
-
-		Vector3f tmp = new Vector3f();
-		for (int i = 0; i < width; i++) {
-			for (int j = 0; j < height; j++) {
-				float wl = 0.2f;
-				tmp.set((i - width * 0.5f) * xzScale, data[i][j],
-						(j - height * 0.5f) * xzScale);
-
-				int index = i + j * width;
-				vertices.putFloat((index * 3 + 0) * 4, tmp.x);
-				vertices.putFloat((index * 3 + 1) * 4, tmp.y);
-				vertices.putFloat((index * 3 + 2) * 4, tmp.z);
-			}
-		}
-
-		gIndices.clear();
-		for (int i = 0; i < width - 1; i++) {
-			for (int j = 0; j < height - 1; j++) {
-				gIndices.putInt(j * width + i);
-				gIndices.putInt(j * width + i + 1);
-				gIndices.putInt((j + 1) * width + i + 1);
-
-				gIndices.putInt(j * width + i);
-				gIndices.putInt((j + 1) * width + i + 1);
-				gIndices.putInt((j + 1) * width + i);
-			}
-		}
-		gIndices.flip();
-
-		TriangleIndexVertexArray indexVertexArrays = new TriangleIndexVertexArray(
-				totalTriangles, gIndices, indexStride, totalVerts, vertices,
-				vertStride);
-
-		BvhTriangleMeshShape groundShape = new BvhTriangleMeshShape(
-				indexVertexArrays, true);
-
-		Transform transform = new Transform();
-		transform.setIdentity();
-		transform.origin.set((width - 1) * 0.5f * xzScale, 0, (height - 1)
-				* 0.5f * xzScale);
-
-		return createRigidBody(groundShape, 0, transform);
-
 	}
 
 	public DynamicsWorld getDynamicsWorld() {

@@ -29,16 +29,15 @@ public class Vehicle {
 
 	private static float gVehicleSteering = 0.f;
 	private static float steeringIncrement = 0.04f;
-	private static float steeringClamp = 0.3f;
-	private static float wheelFriction = 100;
+	private static float steeringClamp = 0.25f;
+	private static float wheelFriction = 10000000;
 	private static float suspensionStiffness = 40.f;
 	private static float suspensionDamping = 2.3f;
 	private static float suspensionCompression = 2.4f;
-	private static float rollInfluence = 0.0f;
-	private static float wheelWidth = 0.256f;
+	private static float rollInfluence = 0.1f;
 	private static float wheelRadius = 0.587f;
 
-	private static final float suspensionRestLength = 0.1f;
+	private static final float suspensionRestLength = 0.18f;
 
 	public Vehicle() {
 	}
@@ -50,7 +49,7 @@ public class Vehicle {
 	public void create(PhysicsWorld world) {
 		Transform tr = new Transform();
 		tr.setIdentity();
-		CollisionShape chassisShape = new BoxShape(new Vector3f(1.0f, 0.5f,
+		CollisionShape chassisShape = new BoxShape(new Vector3f(1.0f, 0.3f,
 				3.0f));
 
 		CompoundShape compound = new CompoundShape();
@@ -93,7 +92,7 @@ public class Vehicle {
 
 			world.getDynamicsWorld().addVehicle(vehicle);
 
-			float h = 0.9f;
+			float h = 0.5f;
 
 			boolean isFrontWheel = true;
 
@@ -131,7 +130,7 @@ public class Vehicle {
 		if(amount == 0)
 			gVehicleSteering *= 0.5f;
 		else
-			gVehicleSteering += amount * steeringIncrement;
+			gVehicleSteering -= amount * steeringIncrement;
 		
 		if(gVehicleSteering > steeringClamp)
 			gVehicleSteering = steeringClamp;
