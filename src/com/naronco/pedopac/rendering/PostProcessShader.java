@@ -88,7 +88,18 @@ public class PostProcessShader extends Shader {
 		return content;
 	}
 
-	public void render(Matrix4f projectionMatrix, Vector2f screenSize) {
+	@Override
+	protected void addDefaultUniforms() {
+		super.addDefaultUniforms();
+
+		addUniform("projectionMatrix");
+		addUniform("screenSize");
+		addUniform("tanHalfFov");
+		addUniform("aspectRatio");
+	}
+
+	public void render(Matrix4f projectionMatrix, Vector2f screenSize,
+			Mesh quadMesh) {
 		outputBuffer.bind();
 
 		use();
@@ -96,16 +107,19 @@ public class PostProcessShader extends Shader {
 		int slot = 0;
 		for (Map.Entry<String, Texture2D> inputTexture : inputTextures
 				.entrySet()) {
-			set(inputTexture.getKey(), inputTexture.getValue(), slot++);
+			getUniform(inputTexture.getKey()).set(inputTexture.getValue(),
+					slot++);
 		}
 
 		float tanHalfFov = projectionMatrix.getElement(1, 1);
 		float aspectRatio = screenSize.x / screenSize.y;
 
-		set("projectionMatrix", projectionMatrix);
-		set("screenSize", screenSize);
-		set("tanHalfFov", tanHalfFov);
-		set("aspectRatio", aspectRatio);
+		getUniform("projectionMatrix").set(projectionMatrix);
+		getUniform("screenSize").set(screenSize);
+		getUniform("tanHalfFov").set(tanHalfFov);
+		getUniform("aspectRatio").set(aspectRatio);
+
+		quadMesh.render();
 	}
 
 	public void setOutputTexture(Texture2D outputTexture) {
@@ -124,6 +138,7 @@ public class PostProcessShader extends Shader {
 
 	public void addInputTexture(String name, Texture2D texture) {
 		inputTextures.put(name, texture);
+		addUniform(name);
 	}
 
 	public Framebuffer getOutputBuffer() {

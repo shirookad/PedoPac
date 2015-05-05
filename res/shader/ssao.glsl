@@ -2,6 +2,13 @@
 
 uniform vec2 kernel[16];
 
+vec2 rand2(vec2 co) {
+    return vec2(
+    			fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453),
+    			fract(sin(dot(co.xy ,vec2(34.2532,23.123))) * 75623.1234)
+    			);
+}
+
 float getLinearizedDepth(float depth) {
 	return projectionMatrix[3][2] / (depth - projectionMatrix[2][2]);
 }
@@ -21,7 +28,8 @@ void main() {
 	float occlusion = 0.0;
 	
 	for (int i = 0; i < 16; ++i) {
-		occlusion += getAoAmount(kernel[i] * texelSize * 8.0);
+		vec2 rndOffs = (rand2(gl_TexCoord[0].st * float(i)) * 2.0 - 1.0) * texelSize * 2.0;
+		occlusion += getAoAmount(kernel[i] * texelSize * 8.0 + rndOffs);
 	}
 	
 	occlusion /= 16.0;
