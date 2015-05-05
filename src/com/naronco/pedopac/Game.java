@@ -141,6 +141,8 @@ public class Game {
 		ssaoShader.addInputTexture("geometryBuffer1", geometryTextures[1]);
 		ssaoShader.addInputTexture("depthBuffer", geometryTextures[2]);
 
+		ssaoShader.addUniform("kernel").set(kernel);
+
 		fbuf = BufferUtils.createFloatBuffer(16);
 
 		out.setIdentity();
@@ -252,8 +254,6 @@ public class Game {
 			float[] f = new float[16];
 			out.getOpenGLMatrix(f);
 			diffuseShader.use();
-			diffuseShader.set("worldMatrix", (FloatBuffer) BufferUtils
-					.createFloatBuffer(16).put(f).flip());
 			fbuf.put(f);
 			fbuf.flip();
 			glMultMatrix(fbuf);
@@ -267,8 +267,6 @@ public class Game {
 			float[] f = new float[16];
 			out.getOpenGLMatrix(f);
 			diffuseShader.use();
-			diffuseShader.set("worldMatrix", (FloatBuffer) BufferUtils
-					.createFloatBuffer(16).put(f).flip());
 			fbuf.put(f);
 			fbuf.flip();
 			glMultMatrix(fbuf);
@@ -282,8 +280,6 @@ public class Game {
 			float[] f = new float[16];
 			out.getOpenGLMatrix(f);
 			diffuseShader.use();
-			diffuseShader.set("worldMatrix", (FloatBuffer) BufferUtils
-					.createFloatBuffer(16).put(f).flip());
 			fbuf.put(f);
 			fbuf.flip();
 			glMultMatrix(fbuf);
@@ -297,8 +293,6 @@ public class Game {
 			float[] f = new float[16];
 			out.getOpenGLMatrix(f);
 			diffuseShader.use();
-			diffuseShader.set("worldMatrix", (FloatBuffer) BufferUtils
-					.createFloatBuffer(16).put(f).flip());
 			fbuf.put(f);
 			fbuf.flip();
 			glMultMatrix(fbuf);
@@ -312,8 +306,6 @@ public class Game {
 			float[] f = new float[16];
 			out.getOpenGLMatrix(f);
 			diffuseShader.use();
-			diffuseShader.set("worldMatrix", (FloatBuffer) BufferUtils
-					.createFloatBuffer(16).put(f).flip());
 			fbuf.put(f);
 			fbuf.flip();
 			glMultMatrix(fbuf);
@@ -338,7 +330,6 @@ public class Game {
 		identity.setIdentity();
 
 		diffuseShader.use();
-		diffuseShader.set("worldMatrix", identity);
 
 		levelMesh.render();
 
@@ -356,9 +347,7 @@ public class Game {
 		Vector2f screenSize = new Vector2f(Display.getWidth(),
 				Display.getHeight());
 
-		ssaoShader.render(projectionMatrix, screenSize);
-		ssaoShader.set("kernel", kernel);
-		quadMesh.render();
+		ssaoShader.render(projectionMatrix, screenSize, quadMesh);
 
 		/*
 		 * horizontalGaussianBlurShader .addInputTexture("inputTexture",

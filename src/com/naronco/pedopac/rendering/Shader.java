@@ -22,9 +22,11 @@ public class Shader {
 	public static final float Z_FAR = 100.0f;
 
 	protected int program;
+	protected List<Uniform> uniforms;
 	protected List<String> preprocessorDirectives;
 
 	public Shader(String name, List<String> preprocessorDirectives) {
+		this.uniforms = new ArrayList<>();
 		this.preprocessorDirectives = preprocessorDirectives;
 
 		program = glCreateProgram();
@@ -41,6 +43,8 @@ public class Shader {
 
 		glDeleteShader(fragmentShader);
 		glDeleteShader(vertexShader);
+
+		addDefaultUniforms();
 	}
 
 	@Override
@@ -89,6 +93,9 @@ public class Shader {
 		return content;
 	}
 
+	protected void addDefaultUniforms() {
+	}
+
 	protected final int loadShader(String filename, int type) {
 		String content = Util.loadResourceText(filename);
 		content = modifyContent(content, type);
@@ -110,78 +117,28 @@ public class Shader {
 		glUseProgram(program);
 	}
 
-	public void set(String name, int v0) {
-		glUniform1i(glGetUniformLocation(program, name), v0);
+	public void addUniform(Uniform uniform) {
+		uniforms.add(uniform);
+		uniform.setShader(this);
 	}
 
-	public void set(String name, int v0, int v1) {
-		glUniform2i(glGetUniformLocation(program, name), v0, v1);
-	}
-
-	public void set(String name, int v0, int v1, int v2) {
-		glUniform3i(glGetUniformLocation(program, name), v0, v1, v2);
-	}
-
-	public void set(String name, int v0, int v1, int v2, int v3) {
-		glUniform4i(glGetUniformLocation(program, name), v0, v1, v2, v3);
-	}
-
-	public void set(String name, float v0) {
-		glUniform1f(glGetUniformLocation(program, name), v0);
-	}
-
-	public void set(String name, float v0, float v1) {
-		glUniform2f(glGetUniformLocation(program, name), v0, v1);
-	}
-
-	public void set(String name, float v0, float v1, float v2) {
-		glUniform3f(glGetUniformLocation(program, name), v0, v1, v2);
-	}
-
-	public void set(String name, float v0, float v1, float v2, float v3) {
-		glUniform4f(glGetUniformLocation(program, name), v0, v1, v2, v3);
-	}
-
-	public void set(String name, Vector2f v) {
-		set(name, v.x, v.y);
-	}
-
-	public void set(String name, Vector3f v) {
-		set(name, v.x, v.y, v.z);
-	}
-
-	public void set(String name, Vector4f v) {
-		set(name, v.x, v.y, v.z, v.w);
-	}
-
-	public void set(String name, Matrix3f matrix) {
-		glUniformMatrix3(glGetUniformLocation(program, name), false,
-				Util.createFloatBufferFromMatrix(matrix));
-	}
-
-	public void set(String name, Matrix4f matrix) {
-		glUniformMatrix4(glGetUniformLocation(program, name), false,
-				Util.createFloatBufferFromMatrix(matrix));
-	}
-
-	public void set(String name, FloatBuffer matrix) {
-		glUniformMatrix4(glGetUniformLocation(program, name), false, matrix);
-	}
-
-	public void set(String name, Vector2f[] v) {
-		FloatBuffer fb = BufferUtils.createFloatBuffer(v.length * 2);
-		for (Vector2f vec : v) {
-			fb.put(vec.x).put(vec.y);
-		}
-		glUniform2(glGetUniformLocation(program, name), (FloatBuffer) fb.flip());
-	}
-
-	public void set(String name, Texture2D texture, int slot) {
-		texture.bind(slot);
-		set(name, slot);
+	public Uniform addUniform(String name) {
+		Uniform uniform = new Uniform(name);
+		uniforms.add(uniform);
+		uniform.setShader(this);
+		return uniform;
 	}
 
 	public int getProgram() {
 		return program;
+	}
+
+	public Uniform getUniform(String name) {
+		for (Uniform uniform : uniforms) {
+			if (uniform.getName().equals(name)) {
+				return uniform;
+			}
+		}
+		return null;
 	}
 }
