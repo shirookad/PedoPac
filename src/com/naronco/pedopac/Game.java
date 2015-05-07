@@ -141,13 +141,11 @@ public class Game {
 		fbuf = BufferUtils.createFloatBuffer(16);
 
 		out.setIdentity();
-		for(int x = -5; x < 6; x++)
-		{
-			for(int y = -5; y < 6; y++)
-			{
+		for (int x = -5; x < 6; x++) {
+			for (int y = -5; y < 6; y++) {
 				out.origin.set(x * 200, -10, y * 200);
-				physicsWorld.addRigidBody(PhysicsWorld.createRigidBody(new BoxShape(
-						new Vector3f(100, 10, 100)), 0, out));
+				physicsWorld.addRigidBody(PhysicsWorld.createRigidBody(
+						new BoxShape(new Vector3f(100, 10, 100)), 0, out));
 			}
 		}
 
@@ -155,6 +153,10 @@ public class Game {
 
 		vehicle = new Vehicle();
 		vehicle.create(physicsWorld);
+
+		physicsWorld.addRigidBody(PhysicsWorld.createRigidBody(
+				ObjLoader.load("levels/level1_collision")
+						.buildCollisionShape(), 0));
 
 		glEnable(GL_DEPTH_TEST);
 		glDepthFunc(GL_LEQUAL);
