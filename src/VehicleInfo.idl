@@ -11,19 +11,19 @@ table VehicleWheelInfo
 {
 	position: Vec3;
 	isFront: bool = false;
-	wheelRadius: double = 0.387;
+	wheelRadius: double = 0.287;
 }
 
 table VehicleInfo
 {
 	wheels: [VehicleWheelInfo];
-	engineForce: double = 1000;
-	breakForce: double = 44;
+	engineForce: double = 272;
+	breakForce: double = 11;
 
 	steeringIncrement: double = 0.04;
-	steeringClamp: double = 0.25;
+	steeringClamp: double = 0.3;
 
-	frictionSlip: double = 40.5;
+	frictionSlip: double = 10.5;
 	maxSuspensionTravelCm: double = 500;
 	suspensionStiffness: double = 35.88;
 	suspensionDamping: double = 0.88;

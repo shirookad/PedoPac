@@ -18,8 +18,6 @@ import com.naronco.pedopac.physics.*;
 import com.naronco.pedopac.rendering.*;
 
 public class Game {
-	private static final int SSAO_KERNEL_SIZE = 4; // Must be 2^x
-
 	private Framebuffer screenBuffer;
 	private Texture2D[] geometryTextures;
 	private Framebuffer geometryBuffer;
@@ -33,20 +31,12 @@ public class Game {
 	private Mesh carMesh, wheelMesh, levelMesh;
 	private FloatBuffer fbuf;
 
-	private Shader textureShader;
 	private Shader diffuseShader;
-	private PostProcessShader deferredLightingShader;
 	private PostProcessShader ssaoShader;
 
-	private PostProcessShader horizontalGaussianBlurShader;
-	private PostProcessShader verticalGaussianBlurShader;
-
-	private Texture2D ssaoOutput, horizontalGaussianBlurOutput;
+	private Texture2D horizontalGaussianBlurOutput;
 
 	private Vector2f[] kernel;
-
-	private Texture2D randomTexture;
-	private Texture2D kernelTexture;
 
 	private Vehicle vehicle;
 	private com.bulletphysics.linearmath.Transform out = new com.bulletphysics.linearmath.Transform();
@@ -79,50 +69,24 @@ public class Game {
 		carMesh = ObjLoader.load("CustomCar1");
 		wheelMesh = ObjLoader.load("Wheel");
 		levelMesh = ObjLoader.load("levels/level2_deco");
-		textureShader = new Shader("texture", null);
+		new Shader("texture", null);
 		diffuseShader = new Shader("diffuse", null);
-		deferredLightingShader = new PostProcessShader("deferredLighting",
+		new PostProcessShader("deferredLighting",
 				screenBuffer);
 
-		ssaoOutput = new Texture2D(width, height, GL_RGBA8, GL_RGBA,
+		new Texture2D(width, height, GL_RGBA8, GL_RGBA,
 				(ByteBuffer) null);
 		horizontalGaussianBlurOutput = new Texture2D(width, height, GL_RGBA8,
 				GL_RGBA, (ByteBuffer) null);
 
-		horizontalGaussianBlurShader = new PostProcessShader("gaussianBlur",
+		new PostProcessShader("gaussianBlur",
 				horizontalGaussianBlurOutput);
-		verticalGaussianBlurShader = new PostProcessShader("gaussianBlur",
+		new PostProcessShader("gaussianBlur",
 				screenBuffer, Arrays.asList("#define _GAUSSIANBLUR_VERTICAL"));
 
 		ssaoShader = new PostProcessShader("ssao", screenBuffer);
 
 		Random random = new Random();
-
-		// Vector3f[] noise = new Vector3f[16];
-		// for (int i = 0; i < noise.length; ++i) {
-		// noise[i] = new Vector3f(random.nextFloat() * 2.0f - 1.0f,
-		// random.nextFloat() * 2.0f - 1.0f, 0.0f);
-		// noise[i].normalize();
-		// noise[i].scale(0.5f);
-		// noise[i].add(new Vector3f(0.5f, 0.5f, 0.5f));
-		// }
-		// randomTexture = new Texture2D(4, 4, GL_RGB, GL_RGB,
-		// Util.createFloatBufferFromArray(noise));
-		//
-		// Vector3f[] kernel = new Vector3f[SSAO_KERNEL_SIZE *
-		// SSAO_KERNEL_SIZE];
-		// for (int i = 0; i < kernel.length; ++i) {
-		// kernel[i] = new Vector3f(random.nextFloat() * 2.0f - 1.0f,
-		// random.nextFloat() * 2.0f - 1.0f, random.nextFloat());
-		// kernel[i].normalize();
-		// float scale = i / (float) kernel.length;
-		// scale = 0.1f + 0.9f * scale * scale;
-		// kernel[i].scale(scale);
-		// kernel[i].scale(0.5f);
-		// kernel[i].add(new Vector3f(0.5f, 0.5f, 0.5f));
-		// }
-		// kernelTexture = new Texture2D(SSAO_KERNEL_SIZE, SSAO_KERNEL_SIZE,
-		// GL_RGB, GL_RGB, Util.createFloatBufferFromArray(kernel));
 
 		kernel = new Vector2f[16];
 		for (int i = 0; i < kernel.length; ++i) {
