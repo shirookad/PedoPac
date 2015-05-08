@@ -24,26 +24,32 @@ public class Uniform {
 	}
 
 	public void set(int value) {
+		shader.use();
 		glUniform1i(location, value);
 	}
 
 	public void set(float value) {
+		shader.use();
 		glUniform1f(location, value);
 	}
 
 	public void set(Vector2f value) {
+		shader.use();
 		glUniform2f(location, value.x, value.y);
 	}
 
 	public void set(Vector3f value) {
+		shader.use();
 		glUniform3f(location, value.x, value.y, value.z);
 	}
 
 	public void set(Vector4f value) {
+		shader.use();
 		glUniform4f(location, value.x, value.y, value.z, value.w);
 	}
 
 	public void set(Vector2f[] values) {
+		shader.use();
 		FloatBuffer fb = BufferUtils.createFloatBuffer(values.length << 1);
 		for (Vector2f value : values)
 			fb.put(value.x).put(value.y);
@@ -51,6 +57,7 @@ public class Uniform {
 	}
 
 	public void set(Vector3f[] values) {
+		shader.use();
 		FloatBuffer fb = BufferUtils.createFloatBuffer(values.length * 3);
 		for (Vector3f value : values)
 			fb.put(value.x).put(value.y).put(value.z);
@@ -58,6 +65,7 @@ public class Uniform {
 	}
 
 	public void set(Vector4f[] values) {
+		shader.use();
 		FloatBuffer fb = BufferUtils.createFloatBuffer(values.length << 2);
 		for (Vector4f value : values)
 			fb.put(value.x).put(value.y).put(value.z).put(value.w);
@@ -65,11 +73,13 @@ public class Uniform {
 	}
 
 	public void set(Matrix3f matrix) {
+		shader.use();
 		glUniformMatrix3(location, false,
 				Util.createFloatBufferFromMatrix(matrix));
 	}
 
 	public void set(Matrix4f matrix) {
+		shader.use();
 		glUniformMatrix4(location, false,
 				Util.createFloatBufferFromMatrix(matrix));
 	}

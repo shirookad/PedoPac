@@ -29,7 +29,7 @@ void main() {
 	
 	for (int i = 0; i < 16; ++i) {
 		vec2 rndOffs = (rand2(gl_TexCoord[0].st * float(i)) * 2.0 - 1.0) * texelSize * 2.0;
-		occlusion += getAoAmount(kernel[i] * texelSize * 8.0 + rndOffs);
+		occlusion += getAoAmount(kernel[i] * texelSize * 4.0 + rndOffs);
 	}
 	
 	occlusion /= 16.0;
