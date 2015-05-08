@@ -15,11 +15,11 @@ public class VehicleInfo extends Table {
   public VehicleWheelInfo wheels(int j) { return wheels(new VehicleWheelInfo(), j); }
   public VehicleWheelInfo wheels(VehicleWheelInfo obj, int j) { int o = __offset(4); return o != 0 ? obj.__init(__indirect(__vector(o) + j * 4), bb) : null; }
   public int wheelsLength() { int o = __offset(4); return o != 0 ? __vector_len(o) : 0; }
-  public double engineForce() { int o = __offset(6); return o != 0 ? bb.getDouble(o + bb_pos) : 372; }
-  public double breakForce() { int o = __offset(8); return o != 0 ? bb.getDouble(o + bb_pos) : 11; }
+  public double engineForce() { int o = __offset(6); return o != 0 ? bb.getDouble(o + bb_pos) : 1000; }
+  public double breakForce() { int o = __offset(8); return o != 0 ? bb.getDouble(o + bb_pos) : 44; }
   public double steeringIncrement() { int o = __offset(10); return o != 0 ? bb.getDouble(o + bb_pos) : 0.04; }
   public double steeringClamp() { int o = __offset(12); return o != 0 ? bb.getDouble(o + bb_pos) : 0.25; }
-  public double frictionSlip() { int o = __offset(14); return o != 0 ? bb.getDouble(o + bb_pos) : 10.5; }
+  public double frictionSlip() { int o = __offset(14); return o != 0 ? bb.getDouble(o + bb_pos) : 40.5; }
   public double maxSuspensionTravelCm() { int o = __offset(16); return o != 0 ? bb.getDouble(o + bb_pos) : 500; }
   public double suspensionStiffness() { int o = __offset(18); return o != 0 ? bb.getDouble(o + bb_pos) : 35.88; }
   public double suspensionDamping() { int o = __offset(20); return o != 0 ? bb.getDouble(o + bb_pos) : 0.88; }
@@ -75,11 +75,11 @@ public class VehicleInfo extends Table {
   public static void addWheels(FlatBufferBuilder builder, int wheelsOffset) { builder.addOffset(0, wheelsOffset, 0); }
   public static int createWheelsVector(FlatBufferBuilder builder, int[] data) { builder.startVector(4, data.length, 4); for (int i = data.length - 1; i >= 0; i--) builder.addOffset(data[i]); return builder.endVector(); }
   public static void startWheelsVector(FlatBufferBuilder builder, int numElems) { builder.startVector(4, numElems, 4); }
-  public static void addEngineForce(FlatBufferBuilder builder, double engineForce) { builder.addDouble(1, engineForce, 372); }
-  public static void addBreakForce(FlatBufferBuilder builder, double breakForce) { builder.addDouble(2, breakForce, 11); }
+  public static void addEngineForce(FlatBufferBuilder builder, double engineForce) { builder.addDouble(1, engineForce, 1000); }
+  public static void addBreakForce(FlatBufferBuilder builder, double breakForce) { builder.addDouble(2, breakForce, 44); }
   public static void addSteeringIncrement(FlatBufferBuilder builder, double steeringIncrement) { builder.addDouble(3, steeringIncrement, 0.04); }
   public static void addSteeringClamp(FlatBufferBuilder builder, double steeringClamp) { builder.addDouble(4, steeringClamp, 0.25); }
-  public static void addFrictionSlip(FlatBufferBuilder builder, double frictionSlip) { builder.addDouble(5, frictionSlip, 10.5); }
+  public static void addFrictionSlip(FlatBufferBuilder builder, double frictionSlip) { builder.addDouble(5, frictionSlip, 40.5); }
   public static void addMaxSuspensionTravelCm(FlatBufferBuilder builder, double maxSuspensionTravelCm) { builder.addDouble(6, maxSuspensionTravelCm, 500); }
   public static void addSuspensionStiffness(FlatBufferBuilder builder, double suspensionStiffness) { builder.addDouble(7, suspensionStiffness, 35.88); }
   public static void addSuspensionDamping(FlatBufferBuilder builder, double suspensionDamping) { builder.addDouble(8, suspensionDamping, 0.88); }

@@ -78,7 +78,7 @@ public class Game {
 		physicsWorld = new PhysicsWorld();
 		carMesh = ObjLoader.load("CustomCar1");
 		wheelMesh = ObjLoader.load("Wheel");
-		levelMesh = ObjLoader.load("levels/level1_deco");
+		levelMesh = ObjLoader.load("levels/level2_deco");
 		textureShader = new Shader("texture", null);
 		diffuseShader = new Shader("diffuse", null);
 		deferredLightingShader = new PostProcessShader("deferredLighting",
@@ -156,7 +156,7 @@ public class Game {
 		vehicle.create(physicsWorld);
 
 		physicsWorld.addRigidBody(PhysicsWorld
-				.createRigidBody(ObjLoader.load("levels/level1_collision")
+				.createRigidBody(ObjLoader.load("levels/level2_collision")
 						.buildCollisionShape(), 0));
 
 		glEnable(GL_DEPTH_TEST);
@@ -185,6 +185,12 @@ public class Game {
 			vehicle.slow(1);
 		} else {
 			vehicle.accelerate(0);
+		}
+
+		if (Keyboard.isKeyDown(Keyboard.KEY_UP)) {
+			vehicle.rigidBody().setGravity(new Vector3f(0, 2, 0));
+		} else {
+			vehicle.rigidBody().setGravity(new Vector3f(0, -10, 0));
 		}
 		vehicle.update();
 

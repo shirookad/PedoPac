@@ -103,28 +103,14 @@ public class Vehicle {
 			wheel.rollInfluence = (float) info.rollInfluence();
 		}
 
-		/*
-		 * vehicle.addWheel(new Vector3f(-1.0f, h, 2.2f), wheelDirectionCS0,
-		 * wheelAxleCS, (float)info.suspensionRestLength(), wheelRadius, tuning,
-		 * isFrontWheel);
-		 * 
-		 * vehicle.addWheel(new Vector3f(1.0f, h, 2.2f), wheelDirectionCS0,
-		 * wheelAxleCS, (float)info.suspensionRestLength(), wheelRadius, tuning,
-		 * isFrontWheel);
-		 * 
-		 * isFrontWheel = false; vehicle.addWheel(new Vector3f(-1.0f, h, -1.7f),
-		 * wheelDirectionCS0, wheelAxleCS, (float)info.suspensionRestLength(),
-		 * wheelRadius, tuning, isFrontWheel);
-		 * 
-		 * vehicle.addWheel(new Vector3f(1.0f, h, -1.7f), wheelDirectionCS0,
-		 * wheelAxleCS, (float)info.suspensionRestLength(), wheelRadius, tuning,
-		 * isFrontWheel);
-		 */
-
 		steeringIncrement = (float) info.steeringIncrement();
 		steeringClamp = (float) info.steeringClamp();
 		maxBreakingForce = (float) info.breakForce();
 		maxEngineForce = (float) info.engineForce();
+	}
+
+	public RigidBody rigidBody() {
+		return carChassis;
 	}
 
 	public void steer(float amount) {
@@ -152,10 +138,12 @@ public class Vehicle {
 
 	public void update() {
 		for (int i = 0; i < vehicle.getNumWheels(); i++) {
-			vehicle.applyEngineForce(engineForce, i);
-			vehicle.setBrake(breakingForce, i);
 			if (vehicle.getWheelInfo(i).bIsFrontWheel)
 				vehicle.setSteeringValue(vehicleSteering, i);
+			else {
+				vehicle.applyEngineForce(engineForce, i);
+				vehicle.setBrake(breakingForce, i);
+			}
 		}
 	}
 
