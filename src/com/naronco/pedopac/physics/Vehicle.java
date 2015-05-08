@@ -29,16 +29,15 @@ public class Vehicle {
 
 	private static float gVehicleSteering = 0.f;
 	private static float steeringIncrement = 0.04f;
-	private static float steeringClamp = 0.3f;
-	private static float wheelFriction = 1000;
-	private static float suspensionStiffness = 20.f;
+	private static float steeringClamp = 0.25f;
+	private static float wheelFriction = 10000000;
+	private static float suspensionStiffness = 40.f;
 	private static float suspensionDamping = 2.3f;
-	private static float suspensionCompression = 4.4f;
+	private static float suspensionCompression = 2.4f;
 	private static float rollInfluence = 0.1f;
-	private static float wheelWidth = 0.256f;
 	private static float wheelRadius = 0.587f;
 
-	private static final float suspensionRestLength = 0.6f;
+	private static final float suspensionRestLength = 0.18f;
 
 	public Vehicle() {
 	}
@@ -50,7 +49,7 @@ public class Vehicle {
 	public void create(PhysicsWorld world) {
 		Transform tr = new Transform();
 		tr.setIdentity();
-		CollisionShape chassisShape = new BoxShape(new Vector3f(1.0f, 0.5f,
+		CollisionShape chassisShape = new BoxShape(new Vector3f(1.0f, 0.3f,
 				3.0f));
 
 		CompoundShape compound = new CompoundShape();
@@ -68,7 +67,7 @@ public class Vehicle {
 		gVehicleSteering = 0f;
 		Transform tr2 = new Transform();
 		tr2.setIdentity();
-		tr2.origin.set(0, 1, 0);
+		tr2.origin.set(0, 1.0f, 0);
 		carChassis.setCenterOfMassTransform(tr2);
 		carChassis.setLinearVelocity(new Vector3f(0, 0, 0));
 		carChassis.setAngularVelocity(new Vector3f(0, 0, 0));
@@ -93,7 +92,7 @@ public class Vehicle {
 
 			world.getDynamicsWorld().addVehicle(vehicle);
 
-			float h = 0.6f;
+			float h = 0.5f;
 
 			boolean isFrontWheel = true;
 
@@ -128,8 +127,16 @@ public class Vehicle {
 	}
 
 	public void steer(float amount) {
-		gVehicleSteering += steeringIncrement;
-		gVehicleSteering = -steeringClamp * amount;
+		if(amount == 0)
+			gVehicleSteering *= 0.5f;
+		else
+			gVehicleSteering -= amount * steeringIncrement;
+		
+		if(gVehicleSteering > steeringClamp)
+			gVehicleSteering = steeringClamp;
+		
+		if(gVehicleSteering < -steeringClamp)
+			gVehicleSteering = -steeringClamp;
 	}
 
 	public void accelerate(float amount) {

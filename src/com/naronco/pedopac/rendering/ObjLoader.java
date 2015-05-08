@@ -34,11 +34,12 @@ public class ObjLoader {
 			if (args[0].equals("f")) {
 				for (int i = 1; i < args.length; i++) {
 					String[] subArgs = args[i].split("/");
-					int v = Integer.parseInt(subArgs[0]) - 1;
-					int vt = Integer.parseInt(subArgs[1]) - 1;
-					int vn = Integer.parseInt(subArgs[2]) - 1;
-					vertices.add(new Vertex(vertexPos.get(v),
-							texCoords.get(vt), normals.get(vn)));
+					Vector3f v = vertexPos
+							.get(Integer.parseInt(subArgs[0]) - 1);
+					Vector2f vt = subArgs[1].equals("") ? new Vector2f(0, 0)
+							: texCoords.get(Integer.parseInt(subArgs[1]) - 1);
+					Vector3f vn = normals.get(Integer.parseInt(subArgs[2]) - 1);
+					vertices.add(new Vertex(v, vt, vn));
 					indices.add(indices.size());
 				}
 			}

@@ -28,12 +28,15 @@ void main() {
 	float occlusion = 0.0;
 	
 	for (int i = 0; i < 16; ++i) {
-		vec2 rndOffs = (rand2(gl_TexCoord[0].st * float(i)) * 2.0 - 1.0) * texelSize * 2.0;
+		vec2 rndOffs = (rand2(vec2(1.0,1.0) * float(i)) * 2.0 - 1.0) * texelSize * (float(i+1)/15.0) * 4.0;
 		occlusion += getAoAmount(kernel[i] * texelSize * 4.0 + rndOffs);
 	}
 	
 	occlusion /= 16.0;
 	occlusion = clamp(occlusion, 0.0, 0.5) + 0.5;
 	
-	gl_FragColor = vec4(vec3(occlusion), 1.0);
+	float nDotL = max(0.0, dot(normal, normalize(vec3(0.3, 1.0, 0.5))));
+	float diffuse=nDotL*0.5+0.5;
+	
+	gl_FragColor = vec4(vec3(pow(occlusion,2.0)*diffuse), 1.0);
 }
