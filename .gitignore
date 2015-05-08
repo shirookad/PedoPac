@@ -2,3 +2,5 @@ bin/
 *.class
 *.blend1
 .settings/
+*Cube[0-9][0-9][0-9].png
+*Cube.png

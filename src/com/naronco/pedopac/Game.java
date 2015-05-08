@@ -76,7 +76,7 @@ public class Game {
 		}
 
 		physicsWorld = new PhysicsWorld();
-		carMesh = ObjLoader.load("Hummer");
+		carMesh = ObjLoader.load("CustomCar1");
 		wheelMesh = ObjLoader.load("Wheel");
 		levelMesh = ObjLoader.load("levels/level1_deco");
 		textureShader = new Shader("texture", null);
@@ -141,21 +141,22 @@ public class Game {
 		fbuf = BufferUtils.createFloatBuffer(16);
 
 		out.setIdentity();
-		for (int x = -5; x < 6; x++) {
-			for (int y = -5; y < 6; y++) {
-				out.origin.set(x * 200, -10, y * 200);
+		for (int x = -10; x < 11; x++) {
+			for (int y = -10; y < 11; y++) {
+				out.origin.set(x * 40, -20, y * 40);
 				physicsWorld.addRigidBody(PhysicsWorld.createRigidBody(
-						new BoxShape(new Vector3f(100, 10, 100)), 0, out));
+						new BoxShape(new Vector3f(20, 20, 20)), 0, out));
 			}
 		}
 
 		out.setIdentity();
 
-		vehicle = new Vehicle();
+		vehicle = new Vehicle(Util.loadBinaryFile(Util
+				.getResourceFileHandle("/CustomCar1.bin")));
 		vehicle.create(physicsWorld);
 
-		physicsWorld.addRigidBody(PhysicsWorld.createRigidBody(
-				ObjLoader.load("levels/level1_collision")
+		physicsWorld.addRigidBody(PhysicsWorld
+				.createRigidBody(ObjLoader.load("levels/level1_collision")
 						.buildCollisionShape(), 0));
 
 		glEnable(GL_DEPTH_TEST);
@@ -245,26 +246,15 @@ public class Game {
 			fbuf.put(f);
 			fbuf.flip();
 			glMultMatrix(fbuf);
+			glTranslatef(0, vehicle.info.height(), 0);
 			carMesh.render();
 		}
 		glPopMatrix();
 
-		glPushMatrix();
-		{
-			vehicle.getWheelTransform(0, out);
-			float[] f = new float[16];
-			out.getOpenGLMatrix(f);
-			diffuseShader.use();
-			fbuf.put(f);
-			fbuf.flip();
-			glMultMatrix(fbuf);
-			wheelMesh.render();
-		}
-		glPopMatrix();
+		for (int i = 0; i < vehicle.info.wheelsLength(); i++) {
+			glPushMatrix();
 
-		glPushMatrix();
-		{
-			vehicle.getWheelTransform(1, out);
+			vehicle.getWheelTransform(i, out);
 			float[] f = new float[16];
 			out.getOpenGLMatrix(f);
 			diffuseShader.use();
@@ -272,34 +262,9 @@ public class Game {
 			fbuf.flip();
 			glMultMatrix(fbuf);
 			wheelMesh.render();
-		}
-		glPopMatrix();
 
-		glPushMatrix();
-		{
-			vehicle.getWheelTransform(2, out);
-			float[] f = new float[16];
-			out.getOpenGLMatrix(f);
-			diffuseShader.use();
-			fbuf.put(f);
-			fbuf.flip();
-			glMultMatrix(fbuf);
-			wheelMesh.render();
+			glPopMatrix();
 		}
-		glPopMatrix();
-
-		glPushMatrix();
-		{
-			vehicle.getWheelTransform(3, out);
-			float[] f = new float[16];
-			out.getOpenGLMatrix(f);
-			diffuseShader.use();
-			fbuf.put(f);
-			fbuf.flip();
-			glMultMatrix(fbuf);
-			wheelMesh.render();
-		}
-		glPopMatrix();
 
 		Matrix4f identity = new Matrix4f();
 		identity.setIdentity();

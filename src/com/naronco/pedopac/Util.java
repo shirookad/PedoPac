@@ -35,6 +35,15 @@ public class Util {
 		}
 	}
 
+	public static String getResourceFileName(String filename) {
+		try {
+			return Shader.class.getResource(filename).toURI().toString();
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
 	public static List<String> loadResourceLines(String filename) {
 		try {
 			BufferedReader reader = new BufferedReader(new InputStreamReader(
@@ -117,5 +126,62 @@ public class Util {
 		float[] f = new float[16];
 		fb.get(f);
 		return new Matrix4f(f);
+	}
+
+	public static Vector3f dot3(Vector3f base, Vector3f v0, Vector3f v1,
+			Vector3f v2) {
+		return new Vector3f(base.dot(v0), base.dot(v1), base.dot(v2));
+	}
+
+	public static Vector3f transformMulVector(
+			com.bulletphysics.linearmath.Transform transform, Vector3f vec) {
+		Vector3f x = (Vector3f) vec.clone();
+		Vector3f v0 = new Vector3f();
+		Vector3f v1 = new Vector3f();
+		Vector3f v2 = new Vector3f();
+		transform.basis.getRow(0, v0);
+		transform.basis.getRow(1, v1);
+		transform.basis.getRow(2, v2);
+		Vector3f y = dot3(x, v0, v1, v2);
+		y.add(transform.origin);
+		return y;
+	}
+
+	public static Vector3f matrixMulVector(Matrix3f mat, Vector3f vec) {
+		return new Vector3f(
+				mat.m00 * vec.x + mat.m01 * vec.y + mat.m02 * vec.z, /**/
+				mat.m10 * vec.x + mat.m11 * vec.y + mat.m12 * vec.z, /**/
+				mat.m20 * vec.x + mat.m21 * vec.y + mat.m22 * vec.z);
+	}
+
+	public static byte[] loadBinaryFile(String path) {
+		File file = new File(path);
+		RandomAccessFile f = null;
+		byte[] data = null;
+		try {
+			f = new RandomAccessFile(file, "r");
+			data = new byte[(int) f.length()];
+			f.readFully(data);
+			f.close();
+		} catch (IOException e) {
+			System.out.println("Couldn't read binary file: " + path);
+			return data;
+		}
+		return data;
+	}
+
+	public static byte[] loadBinaryFile(File file) {
+		RandomAccessFile f = null;
+		byte[] data = null;
+		try {
+			f = new RandomAccessFile(file, "r");
+			data = new byte[(int) f.length()];
+			f.readFully(data);
+			f.close();
+		} catch (IOException e) {
+			System.out.println("Couldn't read binary file");
+			return data;
+		}
+		return data;
 	}
 }

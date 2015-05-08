@@ -1,7 +1,5 @@
 package com.naronco.pedopac.physics;
 
-import java.nio.*;
-
 import javax.vecmath.*;
 
 import com.bulletphysics.collision.broadphase.*;

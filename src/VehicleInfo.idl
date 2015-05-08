@@ -1,0 +1,45 @@
+namespace com.naronco.pedopac.schemas;
+
+struct Vec3
+{
+	x: float;
+	y: float;
+	z: float;
+}
+
+table VehicleWheelInfo
+{
+	position: Vec3;
+	isFront: bool = false;
+	wheelRadius: double = 0.287;
+}
+
+table VehicleInfo
+{
+	wheels: [VehicleWheelInfo];
+	engineForce: double = 372;
+	breakForce: double = 11;
+
+	steeringIncrement: double = 0.04;
+	steeringClamp: double = 0.25;
+
+	frictionSlip: double = 10.5;
+	maxSuspensionTravelCm: double = 500;
+	suspensionStiffness: double = 35.88;
+	suspensionDamping: double = 0.88;
+	suspensionCompression: double = 0.83;
+
+	rollInfluence: double = 0.1;
+
+	suspensionRestLength: double = 0.18;
+
+	width: float;
+	height: float;
+	depth: float;
+
+	mass: float;
+
+	offsetHeight: float;
+}
+
+root_type VehicleInfo;

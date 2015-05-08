@@ -1,12 +1,16 @@
 package com.naronco.pedopac.physics;
 
+import java.nio.*;
+
 import javax.vecmath.*;
 
 import com.bulletphysics.collision.dispatch.*;
 import com.bulletphysics.collision.shapes.*;
 import com.bulletphysics.dynamics.*;
 import com.bulletphysics.dynamics.vehicle.*;
+import com.bulletphysics.dynamics.vehicle.WheelInfo;
 import com.bulletphysics.linearmath.*;
+import com.naronco.pedopac.schemas.*;
 
 public class Vehicle {
 	private RigidBody carChassis;
@@ -21,25 +25,17 @@ public class Vehicle {
 	private static final Vector3f wheelDirectionCS0 = new Vector3f(0, -1, 0);
 	private static final Vector3f wheelAxleCS = new Vector3f(-1, 0, 0);
 
-	private static float gEngineForce = 0.f;
-	private static float gBreakingForce = 0.f;
+	public float engineForce = 0.f;
+	public float breakingForce = 0.f;
+	public float vehicleSteering = 0.f;
 
-	private static float maxEngineForce = 1000.f;
-	private static float maxBreakingForce = 100.f;
+	public float steeringIncrement, steeringClamp, maxEngineForce,
+			maxBreakingForce;
 
-	private static float gVehicleSteering = 0.f;
-	private static float steeringIncrement = 0.04f;
-	private static float steeringClamp = 0.25f;
-	private static float wheelFriction = 10000000;
-	private static float suspensionStiffness = 40.f;
-	private static float suspensionDamping = 2.3f;
-	private static float suspensionCompression = 2.4f;
-	private static float rollInfluence = 0.1f;
-	private static float wheelRadius = 0.587f;
+	public VehicleInfo info;
 
-	private static final float suspensionRestLength = 0.18f;
-
-	public Vehicle() {
+	public Vehicle(byte[] data) {
+		info = VehicleInfo.getRootAsVehicleInfo(ByteBuffer.wrap(data));
 	}
 
 	public RigidBody getChassis() {
@@ -55,16 +51,16 @@ public class Vehicle {
 		CompoundShape compound = new CompoundShape();
 		Transform localTrans = new Transform();
 		localTrans.setIdentity();
-		localTrans.origin.set(0, 1, 0);
+		localTrans.origin.set(0, info.offsetHeight(), 0);
 
 		compound.addChildShape(localTrans, chassisShape);
 
 		tr.origin.set(0, 0, 0);
 
-		carChassis = PhysicsWorld.createRigidBody(compound, 800, tr);
+		carChassis = PhysicsWorld.createRigidBody(compound, info.mass(), tr);
 		world.addRigidBody(carChassis);
 
-		gVehicleSteering = 0f;
+		vehicleSteering = 0f;
 		Transform tr2 = new Transform();
 		tr2.setIdentity();
 		tr2.origin.set(0, 1.0f, 0);
@@ -83,81 +79,84 @@ public class Vehicle {
 			}
 		}
 
-		{
-			vehicleRayCaster = new DefaultVehicleRaycaster(
-					world.getDynamicsWorld());
-			vehicle = new RaycastVehicle(tuning, carChassis, vehicleRayCaster);
+		vehicleRayCaster = new DefaultVehicleRaycaster(world.getDynamicsWorld());
+		vehicle = new RaycastVehicle(tuning, carChassis, vehicleRayCaster);
 
-			carChassis.setActivationState(CollisionObject.DISABLE_DEACTIVATION);
+		tuning.maxSuspensionTravelCm = (float) info.maxSuspensionTravelCm();
+		tuning.frictionSlip = (float) info.frictionSlip();
+		tuning.suspensionCompression = (float) info.suspensionCompression();
+		tuning.suspensionDamping = (float) info.suspensionDamping();
+		tuning.suspensionStiffness = (float) info.suspensionStiffness();
 
-			world.getDynamicsWorld().addVehicle(vehicle);
+		carChassis.setActivationState(CollisionObject.DISABLE_DEACTIVATION);
 
-			float h = 0.5f;
+		world.getDynamicsWorld().addVehicle(vehicle);
 
-			boolean isFrontWheel = true;
+		vehicle.setCoordinateSystem(rightIndex, upIndex, forwardIndex);
 
-			vehicle.setCoordinateSystem(rightIndex, upIndex, forwardIndex);
-
-			vehicle.addWheel(new Vector3f(-1.0f, h, 2.2f), wheelDirectionCS0,
-					wheelAxleCS, suspensionRestLength, wheelRadius, tuning,
-					isFrontWheel);
-
-			vehicle.addWheel(new Vector3f(1.0f, h, 2.2f), wheelDirectionCS0,
-					wheelAxleCS, suspensionRestLength, wheelRadius, tuning,
-					isFrontWheel);
-
-			isFrontWheel = false;
-			vehicle.addWheel(new Vector3f(-1.0f, h, -1.7f), wheelDirectionCS0,
-					wheelAxleCS, suspensionRestLength, wheelRadius, tuning,
-					isFrontWheel);
-
-			vehicle.addWheel(new Vector3f(1.0f, h, -1.7f), wheelDirectionCS0,
-					wheelAxleCS, suspensionRestLength, wheelRadius, tuning,
-					isFrontWheel);
-
-			for (int i = 0; i < vehicle.getNumWheels(); i++) {
-				WheelInfo wheel = vehicle.getWheelInfo(i);
-				wheel.suspensionStiffness = suspensionStiffness;
-				wheel.wheelsDampingRelaxation = suspensionDamping;
-				wheel.wheelsDampingCompression = suspensionCompression;
-				wheel.frictionSlip = wheelFriction;
-				wheel.rollInfluence = rollInfluence;
-			}
+		for (int i = 0; i < info.wheelsLength(); i++) {
+			VehicleWheelInfo w = info.wheels(i);
+			WheelInfo wheel = vehicle.addWheel(new Vector3f(w.position().x(), w
+					.position().y(), w.position().z()), wheelDirectionCS0,
+					wheelAxleCS, (float) info.suspensionRestLength(), (float) w
+							.wheelRadius(), tuning, !w.isFront());
+			wheel.rollInfluence = (float) info.rollInfluence();
 		}
+
+		/*
+		 * vehicle.addWheel(new Vector3f(-1.0f, h, 2.2f), wheelDirectionCS0,
+		 * wheelAxleCS, (float)info.suspensionRestLength(), wheelRadius, tuning,
+		 * isFrontWheel);
+		 * 
+		 * vehicle.addWheel(new Vector3f(1.0f, h, 2.2f), wheelDirectionCS0,
+		 * wheelAxleCS, (float)info.suspensionRestLength(), wheelRadius, tuning,
+		 * isFrontWheel);
+		 * 
+		 * isFrontWheel = false; vehicle.addWheel(new Vector3f(-1.0f, h, -1.7f),
+		 * wheelDirectionCS0, wheelAxleCS, (float)info.suspensionRestLength(),
+		 * wheelRadius, tuning, isFrontWheel);
+		 * 
+		 * vehicle.addWheel(new Vector3f(1.0f, h, -1.7f), wheelDirectionCS0,
+		 * wheelAxleCS, (float)info.suspensionRestLength(), wheelRadius, tuning,
+		 * isFrontWheel);
+		 */
+
+		steeringIncrement = (float) info.steeringIncrement();
+		steeringClamp = (float) info.steeringClamp();
+		maxBreakingForce = (float) info.breakForce();
+		maxEngineForce = (float) info.engineForce();
 	}
 
 	public void steer(float amount) {
-		if(amount == 0)
-			gVehicleSteering *= 0.5f;
+		if (amount == 0)
+			vehicleSteering *= 0.5f;
 		else
-			gVehicleSteering -= amount * steeringIncrement;
-		
-		if(gVehicleSteering > steeringClamp)
-			gVehicleSteering = steeringClamp;
-		
-		if(gVehicleSteering < -steeringClamp)
-			gVehicleSteering = -steeringClamp;
+			vehicleSteering -= amount * steeringIncrement;
+
+		if (vehicleSteering > steeringClamp)
+			vehicleSteering = steeringClamp;
+
+		if (vehicleSteering < -steeringClamp)
+			vehicleSteering = -steeringClamp;
 	}
 
 	public void accelerate(float amount) {
-		gEngineForce = maxEngineForce * amount;
-		gBreakingForce = 0.f;
+		engineForce = maxEngineForce * amount;
+		breakingForce = 0.f;
 	}
 
 	public void slow(float amount) {
-		gBreakingForce = maxBreakingForce * amount;
-		gEngineForce = 0.f;
+		breakingForce = maxBreakingForce * amount;
+		engineForce = 0.f;
 	}
 
 	public void update() {
-		for (int i = 0; i < 4; i++) {
-			vehicle.applyEngineForce(gEngineForce, i);
+		for (int i = 0; i < vehicle.getNumWheels(); i++) {
+			vehicle.applyEngineForce(engineForce, i);
+			vehicle.setBrake(breakingForce, i);
+			if (vehicle.getWheelInfo(i).bIsFrontWheel)
+				vehicle.setSteeringValue(vehicleSteering, i);
 		}
-		vehicle.setBrake(gBreakingForce, 0);
-		vehicle.setBrake(gBreakingForce, 1);
-
-		vehicle.setSteeringValue(gVehicleSteering, 0);
-		vehicle.setSteeringValue(gVehicleSteering, 1);
 	}
 
 	public Transform getTransform(Transform t) {
