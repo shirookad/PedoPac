@@ -29,7 +29,7 @@ void main() {
 	
 	for (int i = 0; i < 16; ++i) {
 		vec2 rndOffs = (rand2(vec2(1.0,1.0) * float(i)) * 2.0 - 1.0) * texelSize * (float(i+1)/15.0) * 4.0;
-		occlusion += getAoAmount(rndOffs);
+		occlusion += getAoAmount(kernel[i] * texelSize * 4.0 + rndOffs);
 	}
 	
 	occlusion /= 16.0;

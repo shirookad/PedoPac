@@ -89,12 +89,12 @@ public class Game {
 		horizontalGaussianBlurOutput = new Texture2D(width, height, GL_RGBA8,
 				GL_RGBA, (ByteBuffer) null);
 
-		ssaoShader = new PostProcessShader("ssao", screenBuffer);
-
 		horizontalGaussianBlurShader = new PostProcessShader("gaussianBlur",
 				horizontalGaussianBlurOutput);
 		verticalGaussianBlurShader = new PostProcessShader("gaussianBlur",
 				screenBuffer, Arrays.asList("#define _GAUSSIANBLUR_VERTICAL"));
+
+		ssaoShader = new PostProcessShader("ssao", screenBuffer);
 
 		Random random = new Random();
 
