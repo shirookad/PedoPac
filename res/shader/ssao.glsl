@@ -38,5 +38,5 @@ void main() {
 	float nDotL = max(0.0, dot(normal, normalize(vec3(0.3, 1.0, 0.5))));
 	float diffuse=nDotL*0.5+0.5;
 	
-	gl_FragColor = vec4(vec3(pow(occlusion,2.0)*diffuse), 1.0);
+	gl_FragColor = vec4(vec3(pow(occlusion,2.0)*diffuse)*color, 1.0);
 }
