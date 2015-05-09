@@ -35,6 +35,7 @@ public class Game {
 	private PostProcessShader ssaoShader;
 
 	private Texture2D horizontalGaussianBlurOutput;
+	private Texture2D carTexture;
 
 	private Vector2f[] kernel;
 
@@ -115,6 +116,7 @@ public class Game {
 		vehicle = new Vehicle(Util.loadBinaryFile(Util
 				.getResourceFileHandle("/CustomCar1.bin")));
 		vehicle.create(physicsWorld);
+		carTexture = TextureLoader.load("/CustomCar1.png");
 		out.setIdentity();
 		out.origin.set(0, 18, 0);
 		out.setRotation(new Quat4f(0, 1, 0, 0));
@@ -222,6 +224,7 @@ public class Game {
 			fbuf.flip();
 			glMultMatrix(fbuf);
 			glTranslatef(0, vehicle.info.height(), 0);
+			carTexture.bind();
 			carMesh.render();
 		}
 		glPopMatrix();

@@ -24,7 +24,7 @@ public class ObjLoader {
 						.parseFloat(args[2]), Float.parseFloat(args[3])));
 			}
 			if (args[0].equals("vt")) {
-				texCoords.add(new Vector2f(Float.parseFloat(args[1]), Float
+				texCoords.add(new Vector2f(Float.parseFloat(args[1]), -Float
 						.parseFloat(args[2])));
 			}
 			if (args[0].equals("vn")) {
