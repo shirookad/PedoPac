@@ -68,21 +68,18 @@ public class Game {
 		physicsWorld = new PhysicsWorld();
 		carMesh = ObjLoader.load("CustomCar1");
 		wheelMesh = ObjLoader.load("Wheel");
-		levelMesh = ObjLoader.load("levels/level2_deco");
+		levelMesh = ObjLoader.load("levels/level3_deco");
 		new Shader("texture", null);
 		diffuseShader = new Shader("diffuse", null);
-		new PostProcessShader("deferredLighting",
-				screenBuffer);
+		new PostProcessShader("deferredLighting", screenBuffer);
 
-		new Texture2D(width, height, GL_RGBA8, GL_RGBA,
-				(ByteBuffer) null);
+		new Texture2D(width, height, GL_RGBA8, GL_RGBA, (ByteBuffer) null);
 		horizontalGaussianBlurOutput = new Texture2D(width, height, GL_RGBA8,
 				GL_RGBA, (ByteBuffer) null);
 
-		new PostProcessShader("gaussianBlur",
-				horizontalGaussianBlurOutput);
-		new PostProcessShader("gaussianBlur",
-				screenBuffer, Arrays.asList("#define _GAUSSIANBLUR_VERTICAL"));
+		new PostProcessShader("gaussianBlur", horizontalGaussianBlurOutput);
+		new PostProcessShader("gaussianBlur", screenBuffer,
+				Arrays.asList("#define _GAUSSIANBLUR_VERTICAL"));
 
 		ssaoShader = new PostProcessShader("ssao", screenBuffer);
 
@@ -118,9 +115,13 @@ public class Game {
 		vehicle = new Vehicle(Util.loadBinaryFile(Util
 				.getResourceFileHandle("/CustomCar1.bin")));
 		vehicle.create(physicsWorld);
+		out.setIdentity();
+		out.origin.set(0, 18, 0);
+		out.setRotation(new Quat4f(0, 1, 0, 0));
+		vehicle.rigidBody().setCenterOfMassTransform(out);
 
 		physicsWorld.addRigidBody(PhysicsWorld
-				.createRigidBody(ObjLoader.load("levels/level2_collision")
+				.createRigidBody(ObjLoader.load("levels/level3_collision")
 						.buildCollisionShape(), 0));
 
 		glEnable(GL_DEPTH_TEST);
@@ -143,6 +144,10 @@ public class Game {
 
 		if (Keyboard.isKeyDown(Keyboard.KEY_W)) {
 			vehicle.accelerate(1);
+			if(Keyboard.isKeyDown(Keyboard.KEY_LSHIFT))
+			{
+				vehicle.accelerate(4);
+			}
 		} else if (Keyboard.isKeyDown(Keyboard.KEY_S)) {
 			vehicle.accelerate(-1);
 		} else if (Keyboard.isKeyDown(Keyboard.KEY_SPACE)) {

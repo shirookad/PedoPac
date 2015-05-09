@@ -7,7 +7,7 @@ public class Main {
 
 	public static void start() {
 		try {
-			Display.setDisplayMode(new DisplayMode(800, 480));
+			Display.setDisplayMode(new DisplayMode(1200, 675));
 			Display.create();
 		} catch (LWJGLException e) {
 			e.printStackTrace();
