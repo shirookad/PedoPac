@@ -155,7 +155,8 @@ public class Game {
 		vehicle.create(physicsWorld);
 
 		physicsWorld.addRigidBody(PhysicsWorld.createRigidBody(
-				levelMesh.buildCollisionShape(), 0));
+				ObjLoader.load("levels/level1_collision")
+						.buildCollisionShape(), 0));
 
 		glEnable(GL_DEPTH_TEST);
 		glDepthFunc(GL_LEQUAL);
