@@ -140,10 +140,10 @@ public class Vehicle {
 		for (int i = 0; i < vehicle.getNumWheels(); i++) {
 			if (vehicle.getWheelInfo(i).bIsFrontWheel)
 				vehicle.setSteeringValue(vehicleSteering, i);
-			else {
-				vehicle.applyEngineForce(engineForce, i);
-				vehicle.setBrake(breakingForce, i);
-			}
+
+			vehicle.applyEngineForce(engineForce, i);
+			vehicle.setBrake(breakingForce, i);
+
 		}
 	}
 
