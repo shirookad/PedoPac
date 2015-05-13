@@ -17,7 +17,7 @@ table VehicleWheelInfo
 table VehicleInfo
 {
 	wheels: [VehicleWheelInfo];
-	engineForce: double = 272;
+	engineForce: double = 342;
 	breakForce: double = 11;
 
 	steeringIncrement: double = 0.04;

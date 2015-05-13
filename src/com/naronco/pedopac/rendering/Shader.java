@@ -1,18 +1,8 @@
 package com.naronco.pedopac.rendering;
 
 import static org.lwjgl.opengl.GL20.*;
-import static org.lwjgl.opengl.GL21.*;
-import static org.lwjgl.opengl.GL30.*;
-import static org.lwjgl.opengl.GL31.*;
-import static org.lwjgl.opengl.GL32.*;
-import static org.lwjgl.opengl.GL33.*;
 
-import java.nio.*;
 import java.util.*;
-
-import javax.vecmath.*;
-
-import org.lwjgl.*;
 
 import com.naronco.pedopac.*;
 
