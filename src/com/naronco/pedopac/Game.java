@@ -43,6 +43,8 @@ public class Game {
 	private com.bulletphysics.linearmath.Transform out = new com.bulletphysics.linearmath.Transform();
 	private boolean wasReturnDown;
 
+	private Skybox skybox = new Skybox("/env_map.jpg");
+
 	public Game() {
 		screenBuffer = new Framebuffer(0);
 
@@ -220,8 +222,19 @@ public class Game {
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
 
+		Vector3f c=new Vector3f(cameraPosition);
+		c.sub(lookAt);
+		c.normalize();
+		
+		gluLookAt(c.x, c.y, c.z, 0, 0, 0, 0, 1, 0);
+		
+		glDepthMask(false);
+		skybox.render();
+		glDepthMask(true);
+
 		vehicle.getTransform(out);
 
+		glLoadIdentity();
 		gluLookAt(cameraPosition.x, cameraPosition.y, cameraPosition.z,
 				lookAt.x, lookAt.y, lookAt.z, 0, 1, 0);
 
