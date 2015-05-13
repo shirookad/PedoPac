@@ -33,7 +33,7 @@ public class PhysicsWorld {
 
 	public static RigidBody createRigidBody(CollisionShape shape, float mass) {
 		Vector3f localInertia = new Vector3f(0, 0, 0);
-		if (mass != 0)
+		if (mass > 0.01f)
 			shape.calculateLocalInertia(mass, localInertia);
 
 		DefaultMotionState myMotionState = new DefaultMotionState();
