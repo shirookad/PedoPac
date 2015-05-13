@@ -41,6 +41,7 @@ public class Game {
 
 	private Vehicle vehicle;
 	private com.bulletphysics.linearmath.Transform out = new com.bulletphysics.linearmath.Transform();
+	private boolean wasReturnDown;
 
 	public Game() {
 		screenBuffer = new Framebuffer(0);
@@ -144,10 +145,19 @@ public class Game {
 			vehicle.steer(0);
 		}
 
+		if (!Keyboard.isKeyDown(Keyboard.KEY_RETURN) && wasReturnDown) {
+			out.setIdentity();
+			out.origin.set(0, 18, 0);
+			out.setRotation(new Quat4f(0, 1, 0, 0));
+			vehicle.rigidBody().setAngularVelocity(new Vector3f());
+			vehicle.rigidBody().setLinearVelocity(new Vector3f());
+			vehicle.rigidBody().setCenterOfMassTransform(out);
+		}
+		wasReturnDown = Keyboard.isKeyDown(Keyboard.KEY_RETURN);
+
 		if (Keyboard.isKeyDown(Keyboard.KEY_W)) {
 			vehicle.accelerate(1);
-			if(Keyboard.isKeyDown(Keyboard.KEY_LSHIFT))
-			{
+			if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
 				vehicle.accelerate(4);
 			}
 		} else if (Keyboard.isKeyDown(Keyboard.KEY_S)) {
