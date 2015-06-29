@@ -1,10 +1,13 @@
 package com.naronco.pedopac.rendering;
 
-import static org.lwjgl.opengl.GL30.*;
+import static org.lwjgl.opengl.GL30.GL_COLOR_ATTACHMENT0;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import javax.vecmath.*;
+import org.lwjgl.util.vector.Matrix4f;
+import org.lwjgl.util.vector.Vector2f;
 
 public class PostProcessShader extends Shader {
 	private Framebuffer outputBuffer;
@@ -111,7 +114,7 @@ public class PostProcessShader extends Shader {
 					slot++);
 		}
 
-		float tanHalfFov = projectionMatrix.getElement(1, 1);
+		float tanHalfFov = projectionMatrix.m11;
 		float aspectRatio = screenSize.x / screenSize.y;
 
 		getUniform("projectionMatrix").set(projectionMatrix);

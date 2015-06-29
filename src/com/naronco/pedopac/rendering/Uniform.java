@@ -1,18 +1,25 @@
 package com.naronco.pedopac.rendering;
 
-import static org.lwjgl.opengl.GL20.*;
+import static org.lwjgl.opengl.GL20.glGetUniformLocation;
+import static org.lwjgl.opengl.GL20.glUniform1f;
+import static org.lwjgl.opengl.GL20.glUniform1i;
+import static org.lwjgl.opengl.GL20.glUniform2;
+import static org.lwjgl.opengl.GL20.glUniform2f;
+import static org.lwjgl.opengl.GL20.glUniform3;
+import static org.lwjgl.opengl.GL20.glUniform3f;
+import static org.lwjgl.opengl.GL20.glUniform4;
+import static org.lwjgl.opengl.GL20.glUniform4f;
+import static org.lwjgl.opengl.GL20.glUniformMatrix3;
+import static org.lwjgl.opengl.GL20.glUniformMatrix4;
 
-import java.nio.*;
+import java.nio.FloatBuffer;
 
-import javax.vecmath.Matrix3f;
-import javax.vecmath.Matrix4f;
-import javax.vecmath.Vector2f;
-import javax.vecmath.Vector3f;
-import javax.vecmath.Vector4f;
-
-import org.lwjgl.*;
-
-import com.naronco.pedopac.*;
+import org.lwjgl.BufferUtils;
+import org.lwjgl.util.vector.Matrix3f;
+import org.lwjgl.util.vector.Matrix4f;
+import org.lwjgl.util.vector.Vector2f;
+import org.lwjgl.util.vector.Vector3f;
+import org.lwjgl.util.vector.Vector4f;
 
 public class Uniform {
 	private Shader shader;
@@ -74,14 +81,16 @@ public class Uniform {
 
 	public void set(Matrix3f matrix) {
 		shader.use();
-		glUniformMatrix3(location, false,
-				Util.createFloatBufferFromMatrix(matrix));
+		FloatBuffer buf = BufferUtils.createFloatBuffer(9);
+		matrix.store(buf);
+		glUniformMatrix3(location, false, buf);
 	}
 
 	public void set(Matrix4f matrix) {
 		shader.use();
-		glUniformMatrix4(location, false,
-				Util.createFloatBufferFromMatrix(matrix));
+		FloatBuffer buf = BufferUtils.createFloatBuffer(16);
+		matrix.store(buf);
+		glUniformMatrix4(location, false, buf);
 	}
 
 	public void set(Texture2D texture, int slot) {

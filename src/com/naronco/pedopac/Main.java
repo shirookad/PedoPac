@@ -8,6 +8,7 @@ public class Main {
 	public static void start() {
 		try {
 			Display.setDisplayMode(new DisplayMode(1200, 750));
+			Display.setTitle("Naronco™ RC Racers");
 			Display.create();
 		} catch (LWJGLException e) {
 			e.printStackTrace();
@@ -20,6 +21,9 @@ public class Main {
 
 		long lastFinishedSecond = System.currentTimeMillis();
 		int frames = 0;
+		int skipms = 1000 / 58;
+		long next = System.currentTimeMillis();
+		long sleep = 0;
 
 		while (!Display.isCloseRequested()) {
 			long now = System.currentTimeMillis();
@@ -29,6 +33,7 @@ public class Main {
 			++frames;
 
 			if ((now - lastFinishedSecond) >= 1000) {
+				game.debug();
 				System.out.println(frames + " FPS");
 				frames = 0;
 				lastFinishedSecond = now;
@@ -36,6 +41,17 @@ public class Main {
 
 			Display.update();
 			time = now;
+			
+			next += skipms;
+			sleep = next - System.currentTimeMillis();
+			if(sleep > 0)
+			{
+				try {
+					Thread.sleep(sleep);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
 		}
 
 		Display.destroy();

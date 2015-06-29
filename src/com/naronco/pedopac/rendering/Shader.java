@@ -9,7 +9,7 @@ import com.naronco.pedopac.*;
 public class Shader {
 	public static final boolean DEFERRED_SHADING = true;
 	public static final float Z_NEAR = 0.01f;
-	public static final float Z_FAR = 400.0f;
+	public static final float Z_FAR = 70.0f;
 
 	protected int program;
 	protected List<Uniform> uniforms;
